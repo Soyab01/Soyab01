@@ -4,165 +4,80 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Manoj Nehra | Official Hub</title>
-    
-    <!-- Assets -->
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;800&display=swap" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
-    
     <style>
-        :root { 
-            --primary: #6366f1; 
-            --secondary: #4f46e5; 
-            --glass: rgba(255, 255, 255, 0.08); 
-            --bg-gradient: linear-gradient(135deg, #0f172a 0%, #1e1b4b 50%, #312e81 100%);
-        }
-
-        body { 
-            background: var(--bg-gradient); color: #f8fafc; 
-            font-family: 'Poppins', sans-serif; min-height: 100vh; 
-            overflow-x: hidden; padding-bottom: 120px; user-select: none; 
-        }
-
-        /* --- UI Glass Elements --- */
-        .glass-card { background: var(--glass); backdrop-filter: blur(25px); border: 1px solid rgba(255,255,255,0.15); border-radius: 25px; padding: 22px; margin-bottom: 18px; box-shadow: 0 15px 35px rgba(0,0,0,0.4); transition: 0.5s; }
-        .note-card:hover { transform: translateY(-5px); border-color: var(--primary); }
-
-        /* --- Auth Screen --- */
-        #auth-screen { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #020617; z-index: 9000; display: flex; align-items: center; justify-content: center; flex-direction: column; padding: 20px; }
-        .brand-logo { width: 90px; height: 90px; border-radius: 50%; border: 3px solid var(--primary); object-fit: cover; box-shadow: 0 0 30px var(--primary); margin-bottom: 15px; }
-
-        .btn-google { background: white; color: #333; border: none; padding: 12px 25px; border-radius: 50px; font-weight: 700; display: flex; align-items: center; justify-content: center; gap: 12px; width: 100%; max-width: 280px; transition: 0.3s; box-shadow: 0 10px 25px rgba(0,0,0,0.3); }
-
-        /* --- Navigation --- */
-        .nav-dock { position: fixed; bottom: 15px; left: 50%; transform: translateX(-50%); width: 95%; max-width: 500px; background: rgba(15, 23, 42, 0.95); backdrop-filter: blur(25px); border-radius: 30px; display: flex; justify-content: space-around; padding: 10px 5px; z-index: 8000; box-shadow: 0 20px 60px rgba(0,0,0,0.7); border: 1px solid rgba(255,255,255,0.15); }
-        .nav-link-3d { color: rgba(255,255,255,0.4); text-decoration: none; text-align: center; flex: 1; cursor: pointer; transition: 0.3s; font-size: 0.7rem; }
-        .nav-link-3d.active { color: var(--primary); transform: translateY(-5px); text-shadow: 0 0 10px var(--primary); }
-        .nav-link-3d i { font-size: 1.2rem; display: block; margin-bottom: 2px; }
-
-        .btn-premium { background: linear-gradient(135deg, var(--primary), #8b5cf6); border: none; color: white; padding: 8px 18px; border-radius: 12px; font-weight: 700; transition: 0.2s; font-size: 0.8rem; }
-        .price-text { color: #22c55e; font-weight: 800; font-size: 1.1rem; margin-right: 10px; }
-
-        .cat-scroll { display: flex; overflow-x: auto; gap: 10px; padding: 10px 0; scrollbar-width: none; }
-        .cat-pill { background: var(--glass); border: 1px solid rgba(255,255,255,0.1); padding: 8px 20px; border-radius: 50px; white-space: nowrap; font-size: 0.8rem; cursor: pointer; }
-        .cat-pill.active { background: var(--primary); border: none; }
-
-        .page { display: none; }
-        .page.active { display: block; animation: fadeInUp 0.4s ease-out; }
-
-        /* --- Test Series UI --- */
-        .test-card-img { width: 100%; height: 140px; object-fit: cover; border-radius: 15px; margin-bottom: 12px; }
+        :root { --primary: #6366f1; --glass: rgba(255, 255, 255, 0.08); --bg-gradient: linear-gradient(135deg, #0f172a 0%, #1e1b4b 50%, #312e81 100%); }
+        body { background: var(--bg-gradient); color: #f8fafc; font-family: 'Poppins', sans-serif; min-height: 100vh; padding-bottom: 120px; user-select: none; overflow-x: hidden; }
+        .glass-card { background: var(--glass); backdrop-filter: blur(25px); border: 1px solid rgba(255,255,255,0.15); border-radius: 25px; padding: 22px; margin-bottom: 18px; box-shadow: 0 15px 35px rgba(0,0,0,0.4); }
+        .nav-dock { position: fixed; bottom: 15px; left: 50%; transform: translateX(-50%); width: 95%; max-width: 500px; background: rgba(15, 23, 42, 0.95); border-radius: 30px; display: flex; justify-content: space-around; padding: 10px 5px; z-index: 8000; border: 1px solid rgba(255,255,255,0.15); }
+        .nav-link-3d { color: rgba(255,255,255,0.4); text-decoration: none; text-align: center; flex: 1; font-size: 0.7rem; cursor: pointer; }
+        .nav-link-3d.active { color: var(--primary); text-shadow: 0 0 10px var(--primary); }
+        .nav-link-3d i { font-size: 1.2rem; display: block; }
+        .btn-premium { background: linear-gradient(135deg, var(--primary), #8b5cf6); border: none; color: white; padding: 8px 18px; border-radius: 12px; font-weight: 700; font-size: 0.8rem; }
+        .page { display: none; } .page.active { display: block; }
+        .test-card-img { width: 100%; height: 120px; object-fit: cover; border-radius: 15px; margin-bottom: 10px; }
         #exam-overlay { display: none; position: fixed; inset: 0; background: #020617; z-index: 9999; flex-direction: column; }
-        .opt-btn { text-align: left; padding: 1rem; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 1rem; transition: 0.2s; width: 100%; color: white; margin-bottom: 10px; }
-        .opt-btn:hover { background: rgba(99, 102, 241, 0.2); border-color: #6366f1; }
+        .opt-btn { text-align: left; padding: 1rem; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 1rem; width: 100%; color: white; margin-bottom: 10px; }
         .opt-btn.selected { background: var(--primary); border-color: white; }
-
-        /* Review Styles */
-        .review-card { border-left: 5px solid #6366f1; padding-left: 15px; margin-bottom: 20px; background: rgba(255,255,255,0.03); border-radius: 10px; padding: 15px; }
-        .review-card.correct { border-color: #22c55e; }
-        .review-card.wrong { border-color: #ef4444; }
-
-        #reader-overlay { display: none; position: fixed; inset: 0; background: #000; z-index: 9999; }
-        iframe { width: 100%; height: 92vh; border: none; }
+        #auth-screen { position: fixed; inset: 0; background: #020617; z-index: 9000; display: flex; align-items: center; justify-content: center; flex-direction: column; }
     </style>
 </head>
 <body oncontextmenu="return false;">
 
-    <!-- AUTH SCREEN -->
     <div id="auth-screen">
-        <div class="glass-card text-center animate__animated animate__zoomIn" style="max-width: 380px; width: 90%;">
-            <img src="./manoj.jpg.jpg" class="brand-logo" onerror="this.src='https://cdn-icons-png.flaticon.com/512/3135/3135715.png'">
+        <div class="glass-card text-center" style="width: 90%; max-width: 380px;">
+            <img src="./manoj.jpg.jpg" style="width: 80px; border-radius: 50%; border: 2px solid var(--primary); margin-bottom: 15px;">
             <h3 class="fw-800">MANOJ NEHRA</h3>
-            <p class="small opacity-75 mb-4">Rajasthan Exams Preparation Hub</p>
-            <button class="btn-google mx-auto mb-4" onclick="login()">
-                <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" width="20">
-                Sign in with Google
-            </button>
+            <p class="small opacity-75 mb-4">Official Preparation Hub</p>
+            <button onclick="login()" class="btn btn-light w-100 rounded-pill py-2">Sign in with Google</button>
         </div>
     </div>
 
-    <!-- MAIN APP -->
     <div id="main-app" style="display:none;">
         <header class="container pt-4">
             <div class="d-flex align-items-center gap-2">
-                <img src="./manoj.jpg.jpg" class="brand-logo" style="width:40px; height:40px; margin-bottom:0; box-shadow: none; border-width: 2px;">
+                <img src="./manoj.jpg.jpg" style="width:40px; height:40px; border-radius: 50%;">
                 <div class="d-flex flex-column">
-                    <h6 class="fw-bold mb-0" style="font-size: 0.95rem;">MANOJ NEHRA</h6>
-                    <div id="user-display-name" class="small text-info fw-bold" style="font-size: 0.75rem;">Student</div>
+                    <h6 class="fw-bold mb-0">MANOJ NEHRA</h6>
+                    <div id="user-display-name" class="small text-info fw-bold" style="font-size: 0.7rem;">Student</div>
                 </div>
             </div>
         </header>
 
-        <div class="container mt-2">
-            <!-- HOME (Notes Section) -->
+        <div class="container mt-3">
             <div id="homePage" class="page active">
-                <div class="py-3">
-                    <h3 class="fw-800">Premium Notes</h3>
-                    <div class="cat-scroll">
-                        <div class="cat-pill active" onclick="filterCat('All', this)">सभी</div>
-                        <div class="cat-pill" onclick="filterCat('Police', this)">Raj Police</div>
-                        <div class="cat-pill" onclick="filterCat('Patwari', this)">Patwari</div>
-                        <div class="cat-pill" onclick="filterCat('LDC', this)">LDC Clerk</div>
-                    </div>
-                </div>
+                <h3 class="fw-800 mb-3">Premium Notes</h3>
                 <div id="notesGrid" class="row g-3"></div>
             </div>
 
-            <!-- TEST SERIES SECTION -->
             <div id="testSeriesPage" class="page">
-                <div class="py-3 text-center">
-                    <h3 class="fw-800">Online Test Series</h3>
-                    <p class="text-info small">लेटेस्ट एग्जाम पैटर्न पर आधारित</p>
-                </div>
-                <div id="testSeriesGrid" class="row g-3">
-                    <!-- Live test series will load here from admin -->
-                </div>
+                <h3 class="fw-800 text-center">Online Test Series</h3>
+                <div id="testSeriesGrid" class="row g-3 mt-2"></div>
             </div>
 
-            <!-- PURCHASE LIBRARY -->
             <div id="purchasePage" class="page">
-                <div class="py-3 text-center"><h3>मेरी लाइब्रेरी</h3></div>
-                <h6 class="text-indigo-500 mb-3"><i class="fas fa-book me-2"></i>खरीदे गए नोट्स</h6>
+                <h3 class="text-center mb-4">मेरी लाइब्रेरी</h3>
                 <div id="myNotesGrid" class="mb-4"></div>
-                <h6 class="text-indigo-500 mb-3"><i class="fas fa-edit me-2"></i>खरीदी गई टेस्ट सीरीज</h6>
                 <div id="myTestsGrid"></div>
-            </div>
-
-            <!-- PROFILE -->
-            <div id="profilePage" class="page">
-                <div class="glass-card text-center mt-4">
-                    <img id="u-img" src="" class="rounded-circle mb-3 shadow" style="width: 80px; border: 3px solid var(--primary);">
-                    <h4 id="u-name">Student Account</h4>
-                    <p id="u-email" class="small opacity-50"></p>
-                    <button class="btn btn-danger btn-sm rounded-pill w-100 py-2 mt-4" onclick="logout()">Logout Account</button>
-                </div>
             </div>
         </div>
 
-        <!-- NAVIGATION DOCK -->
         <nav class="nav-dock">
-            <div class="nav-link-3d active" onclick="showPage('homePage', this)"><i class="fas fa-home"></i><span>Home</span></div>
-            <div class="nav-link-3d" onclick="showPage('testSeriesPage', this)"><i class="fas fa-edit"></i><span>Tests</span></div>
-            <div class="nav-link-3d" onclick="showPage('purchasePage', this)"><i class="fas fa-bookmark"></i><span>Library</span></div>
-            <div class="nav-link-3d" onclick="showPage('profilePage', this)"><i class="fas fa-user"></i><span>Profile</span></div>
+            <div class="nav-link-3d active" onclick="showPage('homePage', this)"><i class="fas fa-home"></i>Home</div>
+            <div class="nav-link-3d" onclick="showPage('testSeriesPage', this)"><i class="fas fa-edit"></i>Tests</div>
+            <div class="nav-link-3d" onclick="showPage('purchasePage', this)"><i class="fas fa-bookmark"></i>Library</div>
         </nav>
     </div>
 
-    <!-- TEST LIST MODAL -->
-    <div id="testListOverlay" class="page fixed inset-0 bg-dark z-[8500] p-4" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; overflow-y:auto;">
-        <button onclick="closeTestList()" class="btn btn-sm btn-outline-light mb-4"><i class="fa fa-arrow-left"></i> Back</button>
-        <h2 id="current-series-title" class="text-center mb-4"></h2>
-        <div id="test-list-container" class="container"></div>
-    </div>
-
-    <!-- EXAM INTERFACE -->
+    <!-- Exam UI -->
     <div id="exam-overlay">
-        <header class="p-3 bg-dark d-flex justify-content-between align-items-center">
+        <header class="p-3 bg-dark d-flex justify-content-between">
             <span id="exam-timer" class="text-danger fw-bold fs-4">60:00</span>
-            <button onclick="finishExam()" class="btn btn-success fw-bold">SUBMIT</button>
+            <button onclick="finishExam()" class="btn btn-success">SUBMIT</button>
         </header>
         <div class="flex-grow-1 container d-flex align-items-center justify-content-center">
             <div class="glass-card w-100" style="max-width: 600px;">
@@ -170,284 +85,105 @@
                 <h5 id="q-text" class="mb-4"></h5>
                 <div id="opt-box"></div>
                 <div class="d-flex justify-content-between mt-4">
-                    <button onclick="prevQ()" class="btn btn-outline-light px-4">Prev</button>
-                    <button onclick="nextQ()" class="btn btn-primary px-4">Next</button>
+                    <button onclick="prevQ()" class="btn btn-outline-light">Prev</button>
+                    <button onclick="nextQ()" class="btn btn-primary">Next</button>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- RESULT & REVIEW OVERLAY -->
-    <div id="result-overlay" class="page fixed inset-0 bg-dark z-[9999] p-4" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; overflow-y:auto;">
-        <div class="container py-4">
-            <h3 class="text-center mb-4">Test Review</h3>
-            <div id="review-container"></div>
-            <button onclick="closeReview()" class="btn btn-primary w-100 mt-4 rounded-pill">Close Review</button>
-        </div>
-    </div>
-
-    <!-- PDF READER -->
-    <div id="reader-overlay">
-        <div class="p-3 bg-dark d-flex justify-content-between align-items-center">
-            <span class="text-primary small fw-bold">SECURE HUB</span>
-            <button class="btn btn-danger btn-sm" onclick="closeReader()">Close X</button>
-        </div>
-        <iframe id="pdfViewer"></iframe>
-    </div>
-
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-        import { getAuth, GoogleAuthProvider, signInWithPopup, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-        import { getDatabase, ref, set, get, child, onValue } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
+        import { getAuth, GoogleAuthProvider, signInWithPopup, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+        import { getDatabase, ref, set, get, onValue } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
 
-        const firebaseConfig = {
-            apiKey: "AIzaSyAhg7hKJ123JRAfio7fymK543XpuNonMHo",
-            authDomain: "showpdf-ffa34.firebaseapp.com",
-            databaseURL: "https://showpdf-ffa34-default-rtdb.firebaseio.com",
-            projectId: "showpdf-ffa34",
-            storageBucket: "showpdf-ffa34.firebasestorage.app",
-            messagingSenderId: "943291456891",
-            appId: "1:943291456891:web:b96e20acd76bd3463b71de"
-        };
-
+        const firebaseConfig = { apiKey: "AIzaSyAhg7hKJ123JRAfio7fymK543XpuNonMHo", databaseURL: "https://showpdf-ffa34-default-rtdb.firebaseio.com", projectId: "showpdf-ffa34" };
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
         const db = getDatabase(app);
         const provider = new GoogleAuthProvider();
 
         window.login = () => signInWithPopup(auth, provider);
-        window.logout = () => signOut(auth).then(() => location.reload());
+        let currentExamQs = [], userAnswers = [], qIdx = 0, examTimer, curPos = 1, curNeg = 0;
 
-        let userData = null;
-        let currentExamQs = [];
-        let userAnswers = [];
-        let qIdx = 0;
-        let examTimer;
-
-        onAuthStateChanged(auth, async (user) => {
+        onAuthStateChanged(auth, user => {
             if (user) {
-                userData = user;
                 document.getElementById('auth-screen').style.display = 'none';
                 document.getElementById('main-app').style.display = 'block';
-                document.getElementById('u-name').innerText = user.displayName;
-                document.getElementById('u-img').src = user.photoURL;
                 document.getElementById('user-display-name').innerText = user.displayName;
-                
-                loadNotes();
-                loadTestSeries();
-            } else {
-                document.getElementById('auth-screen').style.display = 'flex';
-                document.getElementById('main-app').style.display = 'none';
+                loadNotes(); loadTestSeries();
             }
         });
 
-        // --- LOAD NOTES ---
-        async function loadNotes(cat = 'All') {
-            const grid = document.getElementById('notesGrid');
-            const lib = document.getElementById('myNotesGrid');
-            grid.innerHTML = '<p class="text-center w-100">Loading...</p>';
-
+        async function loadNotes() {
             const snap = await get(ref(db, `users/${auth.currentUser.uid}/purchases/notes`));
-            const purchases = snap.exists() ? snap.val() : {};
-
-            const notesData = [
-                { id: "note1", hi: "Rajasthan Police Exam", cat: "Police", price: 99, file: "raj. police.pdf" },
-                { id: "note2", hi: "Patwari Special Notes", cat: "Patwari", price: 149, file: "patwari.pdf" },
-                { id: "note3", hi: "LDC General Knowledge", cat: "LDC", price: 120, file: "ldc.pdf" }
-            ];
-
-            let html = '', libHtml = '';
-            notesData.forEach(n => {
-                const isPaid = purchases[n.id]?.paid;
-                if(cat === 'All' || n.cat === cat) {
-                    html += `<div class="col-12"><div class="glass-card note-card d-flex justify-content-between align-items-center">
-                        <div><h6 class="mb-0 fw-bold">${n.hi}</h6><small class="text-info">${n.cat}</small></div>
-                        <button class="btn-premium" onclick="${isPaid ? `openReader('${n.file}')` : `buyNote('${n.id}', ${n.price})`}">${isPaid ? 'पढ़ें' : '₹'+n.price+' खरीदें'}</button>
-                    </div></div>`;
-                }
-                if(isPaid) libHtml += `<div class="glass-card note-card d-flex justify-content-between align-items-center"><h6 class="mb-0">${n.hi}</h6><button class="btn btn-sm btn-success" onclick="openReader('${n.file}')">OPEN</button></div>`;
+            const purchased = snap.exists() ? snap.val() : {};
+            const notes = [{ id: "n1", title: "Raj Police Notes", price: 99 }];
+            let html = '';
+            notes.forEach(n => {
+                const isPaid = purchased[n.id]?.paid;
+                html += `<div class="col-12"><div class="glass-card d-flex justify-content-between align-items-center"><h6>${n.title}</h6><button class="btn-premium">${isPaid ? 'पढ़ें' : '₹'+n.price}</button></div></div>`;
             });
-            grid.innerHTML = html;
-            lib.innerHTML = libHtml || '<p class="opacity-50 small">कोई नोट्स नहीं हैं</p>';
+            document.getElementById('notesGrid').innerHTML = html;
         }
 
-        // --- LOAD TEST SERIES ---
         function loadTestSeries() {
-            onValue(ref(db, 'testSeries'), async (snap) => {
-                const grid = document.getElementById('testSeriesGrid');
-                const lib = document.getElementById('myTestsGrid');
-                grid.innerHTML = "";
-                const data = snap.val();
-                if(!data) return grid.innerHTML = "<p class='text-center'>No Series Live</p>";
-
-                const purchaseSnap = await get(ref(db, `users/${auth.currentUser.uid}/purchases/tests`));
-                const testPurchases = purchaseSnap.exists() ? purchaseSnap.val() : {};
-
-                let libHtml = '';
+            onValue(ref(db, 'testSeries'), async snap => {
+                const data = snap.val(); if(!data) return;
+                const pSnap = await get(ref(db, `users/${auth.currentUser.uid}/purchases/tests`));
+                const purchased = pSnap.exists() ? pSnap.val() : {};
+                const grid = document.getElementById('testSeriesGrid'); grid.innerHTML = "";
                 Object.keys(data).forEach(id => {
-                    const s = data[id];
-                    const isBought = testPurchases[id]?.paid;
-                    const price = s.price || '0';
-                    
-                    const card = `<div class="col-6 col-md-4">
-                        <div class="glass-card text-center p-2">
-                            <img src="${s.image}" class="test-card-img">
-                            <h6 class="fw-bold small line-clamp-1">${s.title}</h6>
-                            <button class="btn-premium w-100 mt-2" onclick="handleTestAction('${id}', ${price}, '${s.title}')">
-                                ${isBought ? 'START' : '₹'+price}
-                            </button>
-                        </div>
-                    </div>`;
-                    grid.innerHTML += card;
-
-                    if(isBought) {
-                        libHtml += `<div class="glass-card d-flex justify-content-between align-items-center"><h6 class="mb-0">${s.title}</h6><button class="btn btn-sm btn-primary" onclick="openTestList('${id}', '${s.title}')">VIEW TESTS</button></div>`;
-                    }
+                    const s = data[id]; const isPaid = purchased[id]?.paid;
+                    grid.innerHTML += `<div class="col-6"><div class="glass-card text-center p-2"><img src="${s.image}" class="test-card-img"><h6 class="small">${s.title}</h6><button onclick="startExam('${id}')" class="btn-premium w-100 mt-2">${isPaid ? 'START' : '₹'+s.price}</button></div></div>`;
                 });
-                lib.innerHTML = libHtml || '<p class="opacity-50 small">कोई टेस्ट सीरीज नहीं है</p>';
             });
         }
 
-        window.handleTestAction = async (id, price, title) => {
-            const snap = await get(ref(db, `users/${auth.currentUser.uid}/purchases/tests/${id}`));
-            if(snap.exists() && snap.val().paid) {
-                openTestList(id, title);
-            } else {
-                buyTest(id, price);
-            }
-        };
-
-        // --- PAYMENT ---
-        window.buyNote = (id, price) => {
-            var options = { "key": "rzp_test_RwizK12wU5cyN6", "amount": price * 100, "name": "Manoj Nehra",
-                "handler": async function(res) {
-                    await set(ref(db, `users/${auth.currentUser.uid}/purchases/notes/${id}`), { paid: true });
-                    Swal.fire('Success', 'Notes Unlocked', 'success');
-                    loadNotes();
-                }
-            };
-            new Razorpay(options).open();
-        };
-
-        window.buyTest = (id, price) => {
-            var options = { "key": "rzp_test_RwizK12wU5cyN6", "amount": price * 100, "name": "Manoj Nehra",
-                "handler": async function(res) {
-                    await set(ref(db, `users/${auth.currentUser.uid}/purchases/tests/${id}`), { paid: true });
-                    Swal.fire('Success', 'Test Series Unlocked', 'success');
-                    loadTestSeries();
-                }
-            };
-            new Razorpay(options).open();
-        };
-
-        // --- EXAM SYSTEM ---
-        window.openTestList = (id, title) => {
-            document.getElementById('testListOverlay').style.display = 'block';
-            document.getElementById('current-series-title').innerText = title;
-            get(ref(db, `testSeries/${id}`)).then(snap => {
-                const tests = JSON.parse(snap.val().questions || "[]");
-                const box = document.getElementById('test-list-container');
-                box.innerHTML = "";
-                tests.forEach((t, i) => {
-                    box.innerHTML += `<div class="glass-card d-flex justify-content-between align-items-center">
-                        <div><b>Mock Test ${i+1}</b><br><small>${t.length} Qns • 60 Mins</small></div>
-                        <button class="btn btn-primary btn-sm rounded-pill" onclick="startExamNow('${id}', ${i})">START</button>
-                    </div>`;
-                });
-            });
-        };
-
-        window.closeTestList = () => document.getElementById('testListOverlay').style.display = 'none';
-
-        window.startExamNow = async (seriesId, index) => {
-            const snap = await get(ref(db, `testSeries/${seriesId}`));
-            const allTests = JSON.parse(snap.val().questions);
-            currentExamQs = allTests[index];
-            userAnswers = new Array(currentExamQs.length).fill(null);
-            qIdx = 0;
-            document.getElementById('exam-overlay').style.display = 'flex';
-            document.querySelector('.nav-dock').style.display = 'none'; // Hide Navigation
-            renderQuestion();
-            startTimer(3600);
+        window.startExam = async (id) => {
+            const snap = await get(ref(db, `testSeries/${id}`)); const s = snap.val();
+            curPos = parseFloat(s.posMarks) || 1; curNeg = parseFloat(s.negMarks) || 0;
+            currentExamQs = JSON.parse(s.questions)[0]; userAnswers = new Array(currentExamQs.length).fill(null);
+            qIdx = 0; document.getElementById('exam-overlay').style.display = 'flex';
+            document.querySelector('.nav-dock').style.display = 'none';
+            renderQuestion(); startTimer(3600);
         };
 
         function renderQuestion() {
-            const q = currentExamQs[qIdx];
-            document.getElementById('q-num').innerText = `Question ${qIdx+1} / ${currentExamQs.length}`;
-            document.getElementById('q-text').innerText = q.q;
-            const box = document.getElementById('opt-box');
-            box.innerHTML = "";
-            q.options.forEach(opt => {
-                const isSelected = userAnswers[qIdx] === opt;
-                box.innerHTML += `<button onclick="selectOption('${opt}')" class="opt-btn ${isSelected ? 'selected' : ''}">${opt}</button>`;
-            });
+            const q = currentExamQs[qIdx]; document.getElementById('q-num').innerText = `Q.${qIdx+1}/${currentExamQs.length}`;
+            document.getElementById('q-text').innerText = q.q; const box = document.getElementById('opt-box'); box.innerHTML = "";
+            q.options.forEach(o => box.innerHTML += `<button onclick="selectOpt('${o}')" class="opt-btn ${userAnswers[qIdx]===o?'selected':''}">${o}</button>`);
         }
 
-        window.selectOption = (opt) => {
-            userAnswers[qIdx] = opt;
-            renderQuestion();
-            setTimeout(() => { if(qIdx < currentExamQs.length - 1) { qIdx++; renderQuestion(); } }, 300);
-        };
-
-        window.nextQ = () => { if(qIdx < currentExamQs.length - 1) { qIdx++; renderQuestion(); } };
+        window.selectOpt = (o) => { userAnswers[qIdx] = o; renderQuestion(); };
+        window.nextQ = () => { if(qIdx < currentExamQs.length-1) { qIdx++; renderQuestion(); } };
         window.prevQ = () => { if(qIdx > 0) { qIdx--; renderQuestion(); } };
 
-        function startTimer(sec) {
-            clearInterval(examTimer);
-            examTimer = setInterval(() => {
-                sec--;
-                let m = Math.floor(sec/60), s = sec%60;
-                document.getElementById('exam-timer').innerText = `${m}:${s<10?'0':''}${s}`;
-                if(sec <= 0) finishExam();
-            }, 1000);
-        }
+        function startTimer(s) { clearInterval(examTimer); examTimer = setInterval(() => { s--; let m=Math.floor(s/60), sec=s%60; document.getElementById('exam-timer').innerText=`${m}:${sec<10?'0':''}${sec}`; if(s<=0) finishExam(); }, 1000); }
 
         window.finishExam = () => {
-            clearInterval(examTimer);
-            document.getElementById('exam-overlay').style.display = 'none';
-            document.querySelector('.nav-dock').style.display = 'flex'; // Show nav back
-            
-            // Show review
-            const reviewBox = document.getElementById('review-container');
-            reviewBox.innerHTML = "";
+            clearInterval(examTimer); document.getElementById('exam-overlay').style.display = 'none';
+            document.querySelector('.nav-dock').style.display = 'flex';
+            let correct = 0, wrong = 0;
+            currentExamQs.forEach((q, i) => { if(userAnswers[i] === (q.ans || q.answer)) correct++; else if(userAnswers[i] !== null) wrong++; });
+            let score = (correct * curPos) - (wrong * curNeg);
+            Swal.fire({
+                title: 'Test Result',
+                html: `<div class="text-start"><b>Score: ${score.toFixed(2)}</b><br>Correct: ${correct}<br>Wrong: ${wrong}</div>`,
+                confirmButtonText: 'Review Answers'
+            }).then(() => showReview());
+        };
+
+        function showReview() {
+            let html = '<div style="max-height:400px; overflow-y:auto; text-align:left;">';
             currentExamQs.forEach((q, i) => {
-                const isCorrect = userAnswers[i] === q.answer;
-                reviewBox.innerHTML += `<div class="review-card ${isCorrect ? 'correct' : 'wrong'}">
-                    <h6>Q.${i+1} ${q.q}</h6>
-                    <p class="mb-1 small">आपका उत्तर: <b class="${isCorrect ? 'text-success' : 'text-danger'}">${userAnswers[i] || 'नहीं दिया'}</b></p>
-                    <p class="mb-0 small text-success">सही उत्तर: <b>${q.answer}</b></p>
-                </div>`;
+                const isR = userAnswers[i] === (q.ans || q.answer);
+                html += `<div class="mb-3 border-bottom pb-2"><b>Q.${i+1} ${q.q}</b><br><span class="${isR?'text-success':'text-danger'}">Your: ${userAnswers[i]||'None'}</span><br><span class="text-success">Right: ${q.ans||q.answer}</span></div>`;
             });
-            document.getElementById('result-overlay').style.display = 'block';
-        };
+            Swal.fire({ title: 'Review', html: html + '</div>' });
+        }
 
-        window.closeReview = () => {
-            document.getElementById('result-overlay').style.display = 'none';
-            showPage('homePage', document.querySelector('.nav-link-3d'));
-        };
-
-        // --- UI HELPERS ---
-        window.showPage = (id, el) => {
-            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-            document.getElementById(id).classList.add('active');
-            document.querySelectorAll('.nav-link-3d').forEach(n => n.classList.remove('active'));
-            if(el) el.classList.add('active');
-            window.scrollTo(0,0);
-        };
-
-        window.filterCat = (cat, el) => {
-            document.querySelectorAll('.cat-pill').forEach(p => p.classList.remove('active'));
-            el.classList.add('active');
-            loadNotes(cat);
-        };
-
-        window.openReader = (file) => {
-            let pdfUrl = window.location.href.split('index.html')[0] + encodeURIComponent(file);
-            document.getElementById('reader-overlay').style.display = 'block';
-            document.getElementById('pdfViewer').src = "https://docs.google.com/viewer?url=" + encodeURIComponent(pdfUrl) + "&embedded=true";
-        };
-        window.closeReader = () => { document.getElementById('reader-overlay').style.display = 'none'; document.getElementById('pdfViewer').src = ""; };
-
+        window.showPage = (id, el) => { document.querySelectorAll('.page').forEach(p => p.classList.remove('active')); document.getElementById(id).classList.add('active'); document.querySelectorAll('.nav-link-3d').forEach(n => n.classList.remove('active')); el.classList.add('active'); };
     </script>
 </body>
 </html>
