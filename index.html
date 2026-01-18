@@ -224,14 +224,14 @@
 
         window.logout = () => signOut(auth).then(() => location.reload());
 
-        // --- NEW VARIABLES FOR TIME TRACKING ---
         let currentExamQs = [], userAnswers = [], qIdx = 0, examTimer, curPos = 1, curRatio = 3;
         let activeSeriesId = "", activeTestIdx = 0;
         let globalScoreHidden = true;
         let lastFetchedTotalScore = 0;
         
-        let questionDurations = []; // Stores seconds per question
-        let lastQTime = 0; // Timestamp when question started
+        // --- TIME TRACKING VARIABLES ---
+        let questionDurations = []; 
+        let lastQTime = 0;
 
         onAuthStateChanged(auth, user => {
             if (user) {
@@ -368,17 +368,15 @@
         window.startExamNow = async (seriesId, index) => {
             activeTestIdx = index;
             const snap = await get(ref(db, `testSeries/${seriesId}`)); const s = snap.val();
-            
-            // --- TIME SETUP ---
             curPos = parseFloat(s.posMarks) || 1; curRatio = parseFloat(s.negRatio) || 3;
-            let durationMins = parseInt(s.duration) || 60; // Get duration from DB
+            let durationMins = parseInt(s.duration) || 60; 
             
             currentExamQs = JSON.parse(s.questions)[index]; 
             userAnswers = new Array(currentExamQs.length).fill(null);
             
-            // Initialize Per Question Time Tracker
+            // --- TIME TRACKING INIT ---
             questionDurations = new Array(currentExamQs.length).fill(0);
-            lastQTime = Date.now(); // Start tracking first question
+            lastQTime = Date.now(); 
 
             qIdx = 0; closeTestList();
             document.getElementById('exam-overlay').style.display = 'flex';
@@ -392,10 +390,10 @@
             q.options.forEach(o => box.innerHTML += `<button onclick="selectOpt('${o}')" class="opt-btn ${userAnswers[qIdx]===o?'selected':''}">${o}</button>`);
         }
 
-        // --- Helper to track time before switching ---
+        // --- TIME TRACKER FUNCTION ---
         function trackTime() {
             let now = Date.now();
-            let timeSpent = (now - lastQTime) / 1000; // in seconds
+            let timeSpent = (now - lastQTime) / 1000; 
             questionDurations[qIdx] += timeSpent;
             lastQTime = now;
         }
@@ -407,7 +405,7 @@
         function startTimer(s) { clearInterval(examTimer); examTimer = setInterval(() => { s--; let m=Math.floor(s/60), sec=s%60; document.getElementById('exam-timer').innerText=`${m}:${sec<10?'0':''}${sec}`; if(s<=0) finishExam(); }, 1000); }
 
         window.finishExam = async () => {
-            trackTime(); // Save time for the last question
+            trackTime(); // Record last question time
             clearInterval(examTimer); 
             document.getElementById('exam-overlay').style.display = 'none';
             let correct = 0, wrong = 0;
@@ -442,7 +440,7 @@
              const box = document.getElementById('review-container'); box.innerHTML = "";
              currentExamQs.forEach((q, i) => {
                 const isR = userAnswers[i] === (q.ans || q.answer);
-                // SHOWING TIME TAKEN HERE
+                // SHOW TIME IN PREVIEW
                 let timeTaken = Math.round(questionDurations[i]);
                 box.innerHTML += `<div class="review-card ${isR?'correct':'wrong'}">
                     <div class="d-flex justify-content-between mb-2">
