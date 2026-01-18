@@ -22,7 +22,7 @@
         .btn-premium { background: linear-gradient(135deg, var(--primary), #8b5cf6); border: none; color: white; padding: 8px 18px; border-radius: 12px; font-weight: 700; font-size: 0.8rem; }
         .page { display: none; } .page.active { display: block; animation: fadeInUp 0.4s ease-out; }
         .test-card-img { width: 100%; height: 140px; object-fit: cover; border-radius: 15px; margin-bottom: 12px; }
-        #exam-overlay, #testListOverlay, #result-overlay { display: none; position: fixed; inset: 0; background: #020617; z-index: 9999; flex-direction: column; overflow-y:auto; }
+        #exam-overlay, #testListOverlay, #result-overlay, #page-overlay { display: none; position: fixed; inset: 0; background: #020617; z-index: 9999; flex-direction: column; overflow-y:auto; }
         .opt-btn { text-align: left; padding: 1rem; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 1rem; width: 100%; color: white; margin-bottom: 10px; }
         .opt-btn.selected { background: var(--primary); border-color: white; }
         #reader-overlay { display: none; position: fixed; inset: 0; background: #000; z-index: 9999; }
@@ -31,8 +31,9 @@
         .review-card.correct { border-color: #22c55e; } .review-card.wrong { border-color: #ef4444; }
         .stats-header { background: linear-gradient(to right, #4f46e5, #7c3aed); border-radius: 20px; padding: 15px; margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center; }
         .lock-icon { opacity: 0.5; filter: grayscale(1); }
-        
-        /* Keyframes */
+        /* Rank Table */
+        .rank-row { display: flex; justify-content: space-between; padding: 10px; border-bottom: 1px solid rgba(255,255,255,0.1); }
+        .rank-num { width: 30px; font-weight: bold; color: #fbbf24; }
         @keyframes fadeInUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
     </style>
 </head>
@@ -47,6 +48,7 @@
                 <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" width="20" class="me-2"> Sign in with Google
             </button>
             <p id="login-error" class="text-danger mt-3 small" style="display:none;"></p>
+            <button onclick="openPageModal('privacy')" class="btn btn-link text-white small mt-3 opacity-50 text-decoration-none">Privacy Policy</button>
         </div>
     </div>
 
@@ -78,11 +80,47 @@
                 <h6 class="text-indigo-500 mb-3"><i class="fas fa-edit me-2"></i>खरीदी गई टेस्ट सीरीज</h6>
                 <div id="myTestsGrid"></div>
             </div>
+            
+            <!-- Updated Profile Page (Point 1 & 4) -->
             <div id="profilePage" class="page">
                 <div class="glass-card text-center mt-4">
                     <img id="u-img" src="" class="rounded-circle mb-3 shadow" style="width: 80px; height:80px; border: 3px solid var(--primary); object-fit:cover;">
-                    <h4 id="u-name">Student Account</h4>
-                    <button class="btn btn-danger w-100 py-2 mt-4" onclick="logout()">Logout Account</button>
+                    <h4 id="u-name">Student</h4>
+                </div>
+                
+                <!-- Profile Data Form -->
+                <div class="glass-card">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h6 class="mb-0 fw-bold">Personal Details</h6>
+                        <button id="btn-edit-profile" onclick="toggleProfileEdit()" class="btn btn-sm btn-outline-light"><i class="fa fa-pencil"></i> Edit</button>
+                    </div>
+                    <div class="mb-2">
+                        <label class="small opacity-50">Full Name</label>
+                        <input type="text" id="p-name" class="form-control bg-dark text-white border-secondary" disabled>
+                    </div>
+                    <div class="mb-2">
+                        <label class="small opacity-50">Mobile Number</label>
+                        <input type="number" id="p-phone" class="form-control bg-dark text-white border-secondary" disabled>
+                    </div>
+                    <div class="mb-3">
+                        <label class="small opacity-50">State (India)</label>
+                        <select id="p-state" class="form-select bg-dark text-white border-secondary" disabled>
+                            <option value="">Select State</option>
+                            <option>Rajasthan</option><option>Delhi</option><option>Uttar Pradesh</option><option>Haryana</option><option>Bihar</option><option>Madhya Pradesh</option><option>Punjab</option><option>Gujarat</option><option>Maharashtra</option><option>Other</option>
+                        </select>
+                    </div>
+                    <button id="btn-save-profile" onclick="saveProfile()" class="btn btn-primary w-100" style="display:none;">Save Changes</button>
+                </div>
+
+                <!-- Pages Links -->
+                <div class="glass-card p-0 overflow-hidden">
+                    <button onclick="openPageModal('about')" class="w-100 text-start btn btn-dark rounded-0 py-3 border-bottom border-secondary"><i class="fa fa-info-circle me-3 width-20"></i>About Us</button>
+                    <button onclick="window.open('https://wa.me/918769089527', '_blank')" class="w-100 text-start btn btn-dark rounded-0 py-3 border-bottom border-secondary"><i class="fa-brands fa-whatsapp me-3 width-20 text-success"></i>Contact Us</button>
+                    <button onclick="openPageModal('privacy')" class="w-100 text-start btn btn-dark rounded-0 py-3"><i class="fa fa-shield-alt me-3 width-20"></i>Privacy Policy</button>
+                </div>
+
+                <div class="text-center mt-4">
+                    <button class="btn btn-danger w-100 py-2" onclick="logout()">Logout Account</button>
                 </div>
             </div>
         </div>
@@ -122,11 +160,39 @@
         </div>
     </div>
 
-    <!-- Result Review -->
+    <!-- Result & Leaderboard Overlay (Point 5) -->
     <div id="result-overlay" class="p-4">
-        <button onclick="closeReview()" class="btn btn-sm btn-outline-light mb-4"><i class="fa fa-arrow-left"></i> Back</button>
-        <h3 class="text-center mb-4">Test Preview</h3>
-        <div id="review-container" class="container"></div>
+        <button onclick="closeReview()" class="btn btn-sm btn-outline-light mb-4"><i class="fa fa-arrow-left"></i> Home</button>
+        
+        <div class="glass-card text-center mb-3 border-success">
+            <h5 class="text-success fw-bold">RESULT</h5>
+            <h1 class="fw-bold display-4" id="res-score">00</h1>
+            <p class="small mb-0">Total Score</p>
+        </div>
+
+        <div class="d-flex gap-2 mb-4">
+            <button onclick="showReviewAnswerKey()" class="btn btn-primary w-100">Review Answers</button>
+        </div>
+
+        <h6 class="fw-bold mb-3 text-warning"><i class="fa fa-trophy me-2"></i>Top 15 Students</h6>
+        <div class="glass-card p-0 overflow-hidden">
+            <div id="leaderboard-list">
+                <!-- Ranks will load here -->
+                <p class="text-center p-3 small opacity-50">Loading ranks...</p>
+            </div>
+        </div>
+
+        <!-- Hidden Review Container -->
+        <div id="review-container" class="container mt-4" style="display:none;"></div>
+    </div>
+
+    <!-- Generic Page Overlay (Privacy/About) -->
+    <div id="page-overlay" class="p-4">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h3 id="page-title" class="fw-bold mb-0">Page</h3>
+            <button onclick="document.getElementById('page-overlay').style.display='none'" class="btn btn-sm btn-light rounded-pill">Close</button>
+        </div>
+        <div id="page-body" class="glass-card" style="white-space: pre-wrap;">Loading...</div>
     </div>
 
     <!-- PDF Reader -->
@@ -142,17 +208,14 @@
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
         import { getAuth, GoogleAuthProvider, signInWithPopup, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-        import { getDatabase, ref, set, get, onValue } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
+        import { getDatabase, ref, set, get, onValue, query, orderByChild, limitToLast } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
 
-        // ⚠️⚠️ ध्यान दें: नीचे अपनी सही API KEY डालें, यह वाली काम नहीं करेगी ⚠️⚠️
         const firebaseConfig = { 
-            apiKey: "AIzaSyAhg7hKJ123JRAfio7fymK543XpuNonMHo", // <--- यहाँ अपनी असली API Key पेस्ट करें
-            authDomain: "showpdf-ffa34.firebaseapp.com", // <--- यह लाइन जरूरी है Login के लिए
+            apiKey: "AIzaSyAhg7hKJ123JRAfio7fymK543XpuNonMHo", 
+            authDomain: "showpdf-ffa34.firebaseapp.com",
             databaseURL: "https://showpdf-ffa34-default-rtdb.firebaseio.com",
             projectId: "showpdf-ffa34",
             storageBucket: "showpdf-ffa34.appspot.com",
-            messagingSenderId: "YOUR_SENDER_ID",
-            appId: "YOUR_APP_ID"
         };
 
         const app = initializeApp(firebaseConfig);
@@ -160,29 +223,11 @@
         const db = getDatabase(app);
         const provider = new GoogleAuthProvider();
 
-        // Login Function with Debugging
         window.login = () => {
             document.getElementById('login-error').style.display = 'none';
-            signInWithPopup(auth, provider)
-            .then((result) => {
-                console.log("Login Success:", result.user);
-            })
-            .catch((error) => {
-                console.error("Login Error:", error);
-                const errBox = document.getElementById('login-error');
-                errBox.style.display = 'block';
-                
-                // Show user friendly error
-                if(error.code === 'auth/unauthorized-domain') {
-                    errBox.innerText = "Error: Domain not allowed. Go to Firebase Console > Authentication > Settings > Authorized Domains and add 'soyab01.github.io'";
-                    Swal.fire("Domain Error", "Firebase Console में जाकर Authorized Domains में 'soyab01.github.io' add करें।", "error");
-                } else if(error.code === 'auth/api-key-not-valid-please-pass-a-valid-api-key') {
-                    errBox.innerText = "Error: Invalid API Key. Please update firebaseConfig in code.";
-                    Swal.fire("Config Error", "आपकी API Key गलत है। कोड में सही Key डालें।", "error");
-                } else {
-                    errBox.innerText = "Error: " + error.message;
-                    Swal.fire("Login Failed", error.message, "error");
-                }
+            signInWithPopup(auth, provider).catch((error) => {
+                document.getElementById('login-error').style.display = 'block';
+                document.getElementById('login-error').innerText = "Error: " + error.message;
             });
         };
 
@@ -200,25 +245,64 @@
                 document.getElementById('u-name').innerText = user.displayName;
                 document.getElementById('u-img').src = user.photoURL;
                 document.getElementById('user-display-name').innerText = user.displayName;
-                loadNotes(); loadTestSeries();
+                loadNotes(); loadTestSeries(); loadUserProfile();
             } else {
                 document.getElementById('auth-screen').style.display = 'flex';
                 document.getElementById('main-app').style.display = 'none';
             }
         });
 
-        // --- GLOBAL SCORE TOGGLE ---
+        // --- NEW: Profile Logic (Point 4) ---
+        async function loadUserProfile() {
+            const snap = await get(ref(db, `users/${auth.currentUser.uid}/profile`));
+            if(snap.exists()) {
+                const data = snap.val();
+                document.getElementById('p-name').value = data.name || auth.currentUser.displayName;
+                document.getElementById('p-phone').value = data.phone || "";
+                document.getElementById('p-state').value = data.state || "";
+            } else {
+                document.getElementById('p-name').value = auth.currentUser.displayName;
+            }
+        }
+
+        window.toggleProfileEdit = () => {
+            const inputs = ['p-name', 'p-phone', 'p-state'];
+            const isDisabled = document.getElementById('p-name').disabled;
+            inputs.forEach(id => document.getElementById(id).disabled = !isDisabled);
+            document.getElementById('btn-save-profile').style.display = isDisabled ? 'block' : 'none';
+            document.getElementById('btn-edit-profile').innerHTML = isDisabled ? '<i class="fa fa-times"></i> Cancel' : '<i class="fa fa-pencil"></i> Edit';
+        };
+
+        window.saveProfile = async () => {
+            const data = {
+                name: document.getElementById('p-name').value,
+                phone: document.getElementById('p-phone').value,
+                state: document.getElementById('p-state').value
+            };
+            if(!data.phone || !data.state) return Swal.fire('Error', 'Please fill all details', 'warning');
+            
+            await set(ref(db, `users/${auth.currentUser.uid}/profile`), data);
+            window.toggleProfileEdit();
+            Swal.fire('Success', 'Profile Updated!', 'success');
+        };
+
+        // --- NEW: Page Modal Logic (About/Privacy) ---
+        window.openPageModal = async (pageType) => {
+            document.getElementById('page-overlay').style.display = 'flex';
+            document.getElementById('page-title').innerText = pageType === 'privacy' ? "Privacy Policy" : "About Us";
+            document.getElementById('page-body').innerText = "Loading content...";
+            
+            const snap = await get(ref(db, `appPages/${pageType}`));
+            document.getElementById('page-body').innerHTML = snap.val() || "No content available.";
+        };
+
+        // --- STANDARD APP LOGIC ---
         window.toggleGlobalScore = () => {
             globalScoreHidden = !globalScoreHidden;
             const text = document.getElementById('global-score-text');
             const icon = document.getElementById('score-toggle-icon');
-            if(globalScoreHidden) {
-                text.innerText = "****";
-                icon.className = "fa fa-eye-slash";
-            } else {
-                text.innerText = lastFetchedTotalScore.toFixed(2);
-                icon.className = "fa fa-eye";
-            }
+            if(globalScoreHidden) { text.innerText = "****"; icon.className = "fa fa-eye-slash"; } 
+            else { text.innerText = lastFetchedTotalScore.toFixed(2); icon.className = "fa fa-eye"; }
         };
 
         async function loadNotes() {
@@ -276,6 +360,9 @@
             
             lastFetchedTotalScore = Object.values(results).reduce((a, b) => a + b, 0);
             if(!globalScoreHidden) document.getElementById('global-score-text').innerText = lastFetchedTotalScore.toFixed(2);
+            
+            // Save total score for Leaderboard
+            await set(ref(db, `users/${auth.currentUser.uid}/totalScore`), lastFetchedTotalScore);
 
             const box = document.getElementById('test-list-container'); box.innerHTML = "";
             tests.forEach((t, i) => {
@@ -319,23 +406,43 @@
             currentExamQs.forEach((q, i) => { if(userAnswers[i] === (q.ans || q.answer)) correct++; else if(userAnswers[i] !== null) wrong++; });
             let deduction = (wrong * (curPos / curRatio));
             let total = (correct * curPos) - deduction;
+            
+            // Save Test Result
             await set(ref(db, `users/${auth.currentUser.uid}/testResults/${activeSeriesId}/${activeTestIdx}`), total);
-            Swal.fire({
-                title: 'Exam Result',
-                html: `<div class="text-start"><b>कुल अंक: ${total.toFixed(2)}</b><br>सही: ${correct}<br>गलत: ${wrong}<br><span class="text-danger">नेगेटिव कटौती: -${deduction.toFixed(2)}</span></div>`,
-                confirmButtonText: 'Test Preview', showCancelButton: true, cancelButtonText: 'Close'
-            }).then(r => { if(r.isConfirmed) showReview(); else closeReview(); });
+            
+            // Show Result Screen (Point 5)
+            document.getElementById('res-score').innerText = total.toFixed(2);
+            document.getElementById('result-overlay').style.display = 'block';
+            document.getElementById('review-container').style.display = 'none';
+            
+            loadLeaderboard(); // Load Top 15
         };
 
-        function showReview() {
-            document.querySelector('.nav-dock').style.display = 'none';
-            const box = document.getElementById('review-container'); box.innerHTML = "";
-            currentExamQs.forEach((q, i) => {
+        // --- NEW: Leaderboard Logic ---
+        function loadLeaderboard() {
+            const list = document.getElementById('leaderboard-list');
+            // Fetch top 15 users ordered by totalScore
+            const q = query(ref(db, 'users'), orderByChild('totalScore'), limitToLast(15));
+            onValue(q, (snap) => {
+                list.innerHTML = "";
+                let users = [];
+                snap.forEach(child => users.push({name: child.val().profile?.name || "User", score: child.val().totalScore || 0}));
+                users.reverse(); // Highest first
+                
+                users.forEach((u, i) => {
+                    list.innerHTML += `<div class="rank-row"><div class="d-flex gap-3"><span class="rank-num">#${i+1}</span> <span>${u.name}</span></div><span class="text-warning fw-bold">${u.score.toFixed(1)}</span></div>`;
+                });
+            });
+        }
+
+        window.showReviewAnswerKey = () => {
+             const box = document.getElementById('review-container'); box.innerHTML = "";
+             currentExamQs.forEach((q, i) => {
                 const isR = userAnswers[i] === (q.ans || q.answer);
                 box.innerHTML += `<div class="review-card ${isR?'correct':'wrong'}"><h6>Q.${i+1} ${q.q}</h6><p class="small mb-1">आपका: ${userAnswers[i]||'None'}</p><p class="small text-success">सही: ${q.ans||q.answer}</p></div>`;
             });
-            document.getElementById('result-overlay').style.display = 'block';
-        }
+            box.style.display = 'block';
+        };
 
         window.closeReview = () => { 
             document.getElementById('result-overlay').style.display = 'none'; 
