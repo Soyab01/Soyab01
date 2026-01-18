@@ -8,7 +8,6 @@
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;800&display=swap" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
     
@@ -30,22 +29,28 @@
         iframe { width: 100%; height: 92vh; border: none; }
         .review-card { border-left: 5px solid #6366f1; background: rgba(255,255,255,0.03); border-radius: 10px; padding: 15px; margin-bottom: 15px; }
         .review-card.correct { border-color: #22c55e; } .review-card.wrong { border-color: #ef4444; }
-        
-        /* Stats Card */
         .stats-header { background: linear-gradient(to right, #4f46e5, #7c3aed); border-radius: 20px; padding: 15px; margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center; }
         .lock-icon { opacity: 0.5; filter: grayscale(1); }
+        
+        /* Keyframes */
+        @keyframes fadeInUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
     </style>
 </head>
 <body oncontextmenu="return false;">
 
+    <!-- Auth Screen -->
     <div id="auth-screen" style="position:fixed; inset:0; background:#020617; z-index:9000; display:flex; align-items:center; justify-content:center; flex-direction:column;">
         <div class="glass-card text-center" style="width: 90%; max-width: 380px;">
             <img src="./manoj.jpg.jpg" style="width: 90px; height:90px; border-radius: 50%; border: 3px solid var(--primary); margin-bottom: 15px; object-fit:cover;">
             <h3 class="fw-800">MANOJ NEHRA</h3>
-            <button onclick="login()" class="btn btn-light w-100 rounded-pill py-2 mt-3">Sign in with Google</button>
+            <button onclick="login()" class="btn btn-light w-100 rounded-pill py-2 mt-3 fw-bold">
+                <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" width="20" class="me-2"> Sign in with Google
+            </button>
+            <p id="login-error" class="text-danger mt-3 small" style="display:none;"></p>
         </div>
     </div>
 
+    <!-- Main App -->
     <div id="main-app" style="display:none;">
         <header class="container pt-4">
             <div class="d-flex align-items-center gap-2">
@@ -93,18 +98,10 @@
     <!-- Test List Modal -->
     <div id="testListOverlay" class="p-4">
         <button onclick="closeTestList()" class="btn btn-sm btn-outline-light mb-3"><i class="fa fa-arrow-left"></i> Back</button>
-        
-        <!-- Global Score Card -->
         <div class="stats-header">
-            <div>
-                <small class="opacity-75 d-block">Total Series Score</small>
-                <h4 id="global-score-text" class="fw-bold mb-0">****</h4>
-            </div>
-            <button onclick="toggleGlobalScore()" class="btn btn-sm btn-light rounded-pill px-3">
-                <i id="score-toggle-icon" class="fa fa-eye-slash"></i>
-            </button>
+            <div><small class="opacity-75 d-block">Total Series Score</small><h4 id="global-score-text" class="fw-bold mb-0">****</h4></div>
+            <button onclick="toggleGlobalScore()" class="btn btn-sm btn-light rounded-pill px-3"><i id="score-toggle-icon" class="fa fa-eye-slash"></i></button>
         </div>
-
         <h2 id="current-series-title" class="text-center mb-4 fs-5"></h2>
         <div id="test-list-container" class="container"></div>
     </div>
@@ -147,12 +144,15 @@
         import { getAuth, GoogleAuthProvider, signInWithPopup, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
         import { getDatabase, ref, set, get, onValue } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
 
-        // ⚠️ यहाँ अपनी सही FIREBASE CONFIGURATION डालें, पुरानी Key काम नहीं करेगी
+        // ⚠️⚠️ ध्यान दें: नीचे अपनी सही API KEY डालें, यह वाली काम नहीं करेगी ⚠️⚠️
         const firebaseConfig = { 
-            apiKey: "AIzaSyAhg7hKJ123JRAfio7fymK543XpuNonMHo", // <-- Replace with REAL API KEY
+            apiKey: "AIzaSyAhg7hKJ123JRAfio7fymK543XpuNonMHo", // <--- यहाँ अपनी असली API Key पेस्ट करें
+            authDomain: "showpdf-ffa34.firebaseapp.com", // <--- यह लाइन जरूरी है Login के लिए
             databaseURL: "https://showpdf-ffa34-default-rtdb.firebaseio.com",
-            projectId: "showpdf-ffa34"
-            // Add authDomain, storageBucket etc from your Firebase Console
+            projectId: "showpdf-ffa34",
+            storageBucket: "showpdf-ffa34.appspot.com",
+            messagingSenderId: "YOUR_SENDER_ID",
+            appId: "YOUR_APP_ID"
         };
 
         const app = initializeApp(firebaseConfig);
@@ -160,22 +160,29 @@
         const db = getDatabase(app);
         const provider = new GoogleAuthProvider();
 
-        // --- FIXED LOGIN FUNCTION ---
+        // Login Function with Debugging
         window.login = () => {
+            document.getElementById('login-error').style.display = 'none';
             signInWithPopup(auth, provider)
             .then((result) => {
-                // Login successful, onAuthStateChanged will handle the UI update
-                console.log("User logged in:", result.user);
+                console.log("Login Success:", result.user);
             })
             .catch((error) => {
                 console.error("Login Error:", error);
-                // Show Error to User
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Login Failed',
-                    text: error.message,
-                    footer: '<small>Check console for details. Verify API Key/Domain.</small>'
-                });
+                const errBox = document.getElementById('login-error');
+                errBox.style.display = 'block';
+                
+                // Show user friendly error
+                if(error.code === 'auth/unauthorized-domain') {
+                    errBox.innerText = "Error: Domain not allowed. Go to Firebase Console > Authentication > Settings > Authorized Domains and add 'soyab01.github.io'";
+                    Swal.fire("Domain Error", "Firebase Console में जाकर Authorized Domains में 'soyab01.github.io' add करें।", "error");
+                } else if(error.code === 'auth/api-key-not-valid-please-pass-a-valid-api-key') {
+                    errBox.innerText = "Error: Invalid API Key. Please update firebaseConfig in code.";
+                    Swal.fire("Config Error", "आपकी API Key गलत है। कोड में सही Key डालें।", "error");
+                } else {
+                    errBox.innerText = "Error: " + error.message;
+                    Swal.fire("Login Failed", error.message, "error");
+                }
             });
         };
 
@@ -195,7 +202,6 @@
                 document.getElementById('user-display-name').innerText = user.displayName;
                 loadNotes(); loadTestSeries();
             } else {
-                // Ensure auth screen is visible if not logged in
                 document.getElementById('auth-screen').style.display = 'flex';
                 document.getElementById('main-app').style.display = 'none';
             }
@@ -263,13 +269,11 @@
             document.getElementById('testListOverlay').style.display = 'flex';
             document.getElementById('current-series-title').innerText = title;
             
-            // Get Series & Progress
             const seriesSnap = await get(ref(db, `testSeries/${id}`));
             const tests = JSON.parse(seriesSnap.val().questions || "[]");
             const progressSnap = await get(ref(db, `users/${auth.currentUser.uid}/testResults/${id}`));
             const results = progressSnap.exists() ? progressSnap.val() : {};
-
-            // Calculate Total Score
+            
             lastFetchedTotalScore = Object.values(results).reduce((a, b) => a + b, 0);
             if(!globalScoreHidden) document.getElementById('global-score-text').innerText = lastFetchedTotalScore.toFixed(2);
 
@@ -277,16 +281,9 @@
             tests.forEach((t, i) => {
                 const isCompleted = results[i] !== undefined;
                 const isLocked = i > 0 && results[i-1] === undefined;
-                
                 box.innerHTML += `<div class="glass-card d-flex justify-content-between align-items-center ${isLocked ? 'lock-icon' : ''}">
-                    <div>
-                        <b>Mock Test ${i+1}</b><br>
-                        <small>${t.length} Qns ${isCompleted ? `| Score: ${results[i].toFixed(1)}` : ''}</small>
-                    </div>
-                    <button class="btn ${isLocked ? 'btn-secondary' : 'btn-primary'} btn-sm rounded-pill" 
-                            onclick="${isLocked ? '' : `startExamNow('${id}',${i})`}" ${isLocked ? 'disabled' : ''}>
-                        ${isCompleted ? 'RETEST' : (isLocked ? '<i class="fa fa-lock"></i>' : 'START')}
-                    </button>
+                    <div><b>Mock Test ${i+1}</b><br><small>${t.length} Qns ${isCompleted ? `| Score: ${results[i].toFixed(1)}` : ''}</small></div>
+                    <button class="btn ${isLocked ? 'btn-secondary' : 'btn-primary'} btn-sm rounded-pill" onclick="${isLocked ? '' : `startExamNow('${id}',${i})`}" ${isLocked ? 'disabled' : ''}>${isCompleted ? 'RETEST' : (isLocked ? '<i class="fa fa-lock"></i>' : 'START')}</button>
                 </div>`;
             });
         };
@@ -318,23 +315,16 @@
         window.finishExam = async () => {
             clearInterval(examTimer); 
             document.getElementById('exam-overlay').style.display = 'none';
-            
             let correct = 0, wrong = 0;
             currentExamQs.forEach((q, i) => { if(userAnswers[i] === (q.ans || q.answer)) correct++; else if(userAnswers[i] !== null) wrong++; });
             let deduction = (wrong * (curPos / curRatio));
             let total = (correct * curPos) - deduction;
-
-            // Save Progress
             await set(ref(db, `users/${auth.currentUser.uid}/testResults/${activeSeriesId}/${activeTestIdx}`), total);
-
             Swal.fire({
                 title: 'Exam Result',
                 html: `<div class="text-start"><b>कुल अंक: ${total.toFixed(2)}</b><br>सही: ${correct}<br>गलत: ${wrong}<br><span class="text-danger">नेगेटिव कटौती: -${deduction.toFixed(2)}</span></div>`,
                 confirmButtonText: 'Test Preview', showCancelButton: true, cancelButtonText: 'Close'
-            }).then(r => { 
-                if(r.isConfirmed) showReview(); 
-                else closeReview();
-            });
+            }).then(r => { if(r.isConfirmed) showReview(); else closeReview(); });
         };
 
         function showReview() {
