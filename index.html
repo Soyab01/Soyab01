@@ -5,13 +5,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Manoj Nehra | Learning Hub</title>
     
-    <!-- CSS & Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;800&display=swap" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script> <!-- For Results Graph -->
+    <script src="https://checkout.razorpay.com/v1/checkout.js"></script> <!-- RAZORPAY SDK -->
     
     <style>
         :root { 
@@ -19,61 +17,34 @@
             --glass: rgba(255, 255, 255, 0.05); 
             --bg-gradient: linear-gradient(135deg, #020617 0%, #1e1b4b 100%);
         }
-        body { background: var(--bg-gradient); color: #f8fafc; font-family: 'Poppins', sans-serif; min-height: 100vh; padding-bottom: 80px; user-select: none; }
+        body { background: var(--bg-gradient); color: #f8fafc; font-family: 'Poppins', sans-serif; min-height: 100vh; padding-bottom: 90px; user-select: none; }
         
-        /* Glass Components */
         .glass-card { 
             background: var(--glass); backdrop-filter: blur(16px);
             border: 1px solid rgba(255,255,255,0.1); border-radius: 20px; 
-            padding: 15px; position: relative; transition: 0.3s; margin-bottom: 15px;
+            padding: 15px; position: relative; margin-bottom: 15px;
         }
-        .glass-card:active { transform: scale(0.98); }
         .thumb-img { width: 100%; height: 140px; object-fit: cover; border-radius: 15px; margin-bottom: 10px; }
-
-        /* Profile & Buttons */
-        .btn-3d {
-            background: linear-gradient(145deg, #6366f1, #4f46e5); color: white;
-            border: none; width: 100%; padding: 12px; border-radius: 12px;
-            font-weight: 700; box-shadow: 0 4px 0 #3730a3; margin-bottom: 15px;
-        }
-        .btn-3d:active { transform: translateY(4px); box-shadow: none; }
-        .btn-secondary-3d { background: rgba(255,255,255,0.1); box-shadow: 0 4px 0 rgba(255,255,255,0.05); }
+        .btn-3d { background: var(--primary); color: white; border: none; width: 100%; padding: 10px; border-radius: 10px; font-weight: bold; }
         
-        .input-3d {
-            background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.1);
-            border-radius: 12px; padding: 12px; color: white; width: 100%;
-            text-align: center; font-weight: 600; margin-bottom: 12px;
-        }
-        .input-3d:disabled { opacity: 0.6; cursor: not-allowed; border-color: transparent; }
-
-        /* Exam UI */
-        .q-palette { display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; max-height: 200px; overflow-y: auto; }
-        .q-btn { width: 40px; height: 40px; border-radius: 50%; border: 1px solid #666; display: flex; align-items: center; justify-content: center; font-size: 0.8rem; cursor: pointer; }
-        .q-btn.answered { background: #22c55e; border-color: #22c55e; color: white; }
-        .q-btn.visited { background: #eab308; border-color: #eab308; color: black; }
-        .q-btn.active { border: 2px solid white; box-shadow: 0 0 10px white; }
-
-        /* Result Table */
-        .rank-table { width: 100%; font-size: 0.9rem; }
-        .rank-table tr { border-bottom: 1px solid rgba(255,255,255,0.1); }
-        .rank-table td { padding: 10px; }
-        .rank-1 { color: #ffd700; font-weight: bold; }
-
-        /* Navigation */
         .nav-dock { 
             position: fixed; bottom: 15px; left: 50%; transform: translateX(-50%); 
-            width: 90%; max-width: 400px; background: rgba(15, 23, 42, 0.95); 
+            width: 95%; max-width: 450px; background: rgba(15, 23, 42, 0.98); 
             border-radius: 25px; display: flex; justify-content: space-around; 
-            padding: 10px; z-index: 1000; border: 1px solid rgba(255,255,255,0.15);
+            padding: 10px; z-index: 1000; border: 1px solid rgba(255,255,255,0.2);
         }
-        .nav-item { text-align: center; color: rgba(255,255,255,0.5); flex: 1; font-size: 0.75rem; transition: 0.3s; }
-        .nav-item.active { color: var(--primary); transform: translateY(-5px); }
-        .nav-item i { font-size: 1.4rem; display: block; margin-bottom: 2px; }
+        .nav-item { text-align: center; color: rgba(255,255,255,0.5); flex: 1; font-size: 0.7rem; }
+        .nav-item.active { color: var(--primary); transform: translateY(-3px); }
+        .nav-item i { font-size: 1.3rem; display: block; }
 
-        /* Overlays */
         .overlay-fs { position: fixed; inset: 0; background: #0f172a; z-index: 5000; overflow-y: auto; display: none; padding-bottom: 50px; }
         .page { display: none; animation: fadeIn 0.4s; }
         .page.active { display: block; }
+
+        /* Exam Grid */
+        .q-palette { display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; }
+        .q-btn { height: 35px; border-radius: 5px; border: 1px solid #555; display: flex; align-items: center; justify-content: center; font-size: 0.8rem; cursor: pointer; }
+        .q-btn.answered { background: #22c55e; border-color: transparent; }
     </style>
 </head>
 <body oncontextmenu="return false;">
@@ -81,158 +52,112 @@
     <!-- LOGIN -->
     <div id="auth-screen" style="position:fixed; inset:0; z-index:9000; background:#020617; display:flex; align-items:center; justify-content:center;">
         <div class="glass-card text-center" style="width:300px;">
-            <img src="./manoj.jpg.jpg" class="rounded-circle border border-3 border-primary shadow mb-3" width="90" onerror="this.src='https://via.placeholder.com/90'">
-            <h4 class="fw-bold">Manoj Nehra Hub</h4>
-            <button onclick="login()" class="btn btn-light w-100 rounded-pill py-2 fw-bold mt-3"><i class="fab fa-google"></i> Sign In</button>
+            <img src="./manoj.jpg.jpg" class="rounded-circle border border-3 border-primary shadow mb-3" width="90">
+            <h4 class="fw-bold">Login</h4>
+            <button onclick="login()" class="btn btn-light w-100 rounded-pill mt-3 fw-bold"><i class="fab fa-google"></i> Sign In</button>
         </div>
     </div>
 
     <!-- MAIN APP -->
     <div id="main-app" style="display:none;">
         <header class="container pt-3 pb-2 sticky-top" style="background: rgba(2,6,23,0.95); z-index: 900;">
-            <div class="d-flex justify-content-between align-items-center">
+            <div class="d-flex align-items-center justify-content-between">
                 <div class="d-flex align-items-center">
                     <img id="head-img" src="" class="rounded-circle border border-secondary" width="40">
-                    <div class="ms-3">
-                        <h6 class="mb-0 fw-bold text-white" id="user-name">Student</h6>
+                    <div class="ms-3 lh-1">
+                        <h6 class="mb-0 fw-bold" id="user-name">Student</h6>
                         <small class="text-success" style="font-size:0.7rem">● Online</small>
                     </div>
                 </div>
-                <!-- Marks Hider for Test -->
-                <div id="exam-top-bar" class="d-none text-end">
-                    <span id="timer-display" class="badge bg-danger fs-6">00:00</span>
-                </div>
+                <div id="exam-timer-box" class="d-none badge bg-danger fs-6">00:00</div>
             </div>
         </header>
 
         <div class="container mt-2">
-            
             <!-- 1. HOME (NOTES) -->
             <div id="homePage" class="page active">
-                <h5 class="fw-bold mb-3 ps-2 border-start border-4 border-primary">Study Material</h5>
+                <h5 class="fw-bold mb-3 ps-2 border-start border-4 border-primary">Latest Notes</h5>
                 <div id="notes-container" class="row g-3"></div>
             </div>
 
-            <!-- 2. TEST SERIES LIST -->
+            <!-- 2. TESTS -->
             <div id="testsPage" class="page">
                 <h5 class="fw-bold mb-3 ps-2 border-start border-4 border-info">Test Series</h5>
                 <div id="series-container" class="row g-3"></div>
             </div>
 
-            <!-- 3. PROFILE -->
+            <!-- 3. LIBRARY (PURCHASED) -->
+            <div id="libraryPage" class="page">
+                <h5 class="fw-bold mb-3 ps-2 border-start border-4 border-success">My Library</h5>
+                <p class="small text-white-50 ms-2">Your purchased items appear here.</p>
+                <div id="library-container" class="row g-3"></div>
+            </div>
+
+            <!-- 4. PROFILE -->
             <div id="profilePage" class="page">
                 <div class="glass-card text-center mt-4">
-                    <img id="prof-img" src="" class="rounded-circle mb-3 border border-4 border-primary shadow" width="100">
-                    
-                    <input id="p-name" class="input-3d" placeholder="Full Name" disabled>
-                    <input id="p-phone" class="input-3d" type="tel" placeholder="Mobile Number" disabled>
-                    <input id="p-state" class="input-3d" placeholder="State (e.g. Rajasthan)" disabled>
-                    
-                    <button id="btn-edit-prof" onclick="toggleEditProfile()" class="btn-3d bg-primary">Edit Profile</button>
-
-                    <div class="mt-4 text-start">
-                        <button onclick="openPage('about')" class="btn-3d btn-secondary-3d text-start"><i class="fas fa-university me-3"></i>About Us</button>
-                        <button onclick="openPage('privacy')" class="btn-3d btn-secondary-3d text-start"><i class="fas fa-shield-alt me-3"></i>Privacy Policy</button>
-                        <button onclick="logout()" class="btn btn-danger w-100 rounded-pill py-2 mt-2">Logout</button>
-                    </div>
+                    <img id="prof-img" src="" class="rounded-circle mb-3 border border-4 border-primary" width="100">
+                    <input id="p-name" class="form-control bg-dark text-white border-secondary mb-2 text-center" placeholder="Name" disabled>
+                    <input id="p-phone" class="form-control bg-dark text-white border-secondary mb-2 text-center" placeholder="Phone" disabled>
+                    <button id="btn-edit-prof" onclick="toggleEditProfile()" class="btn btn-primary w-100 mb-3">Edit Profile</button>
+                    <button onclick="logout()" class="btn btn-outline-danger w-100 rounded-pill">Logout</button>
                 </div>
             </div>
         </div>
 
-        <!-- BOTTOM NAV -->
         <nav class="nav-dock">
-            <div class="nav-item active" onclick="nav('homePage', this)"><i class="fas fa-book-reader"></i>Notes</div>
+            <div class="nav-item active" onclick="nav('homePage', this)"><i class="fas fa-book"></i>Notes</div>
             <div class="nav-item" onclick="nav('testsPage', this)"><i class="fas fa-laptop-code"></i>Tests</div>
-            <div class="nav-item" onclick="nav('profilePage', this)"><i class="fas fa-user-circle"></i>Profile</div>
+            <div class="nav-item" onclick="nav('libraryPage', this)"><i class="fas fa-bookmark"></i>Library</div>
+            <div class="nav-item" onclick="nav('profilePage', this)"><i class="fas fa-user"></i>Profile</div>
         </nav>
     </div>
 
-    <!-- SUB-TESTS LIST OVERLAY (Level 2) -->
+    <!-- OVERLAYS (Paper List, Exam, Result) -->
+    
+    <!-- Paper List -->
     <div id="subTestsOverlay" class="overlay-fs p-3">
         <div class="d-flex justify-content-between align-items-center mb-4 sticky-top bg-dark pt-2 pb-2">
-            <h5 class="fw-bold m-0" id="seriesTitleDisplay">Series Name</h5>
+            <h5 class="fw-bold m-0" id="seriesTitleDisplay">Series</h5>
             <button onclick="closeOverlay('subTestsOverlay')" class="btn btn-sm btn-outline-light rounded-pill">Close</button>
         </div>
         <div id="paper-list-container"></div>
     </div>
 
-    <!-- EXAM INTERFACE OVERLAY (Govt Style) -->
-    <div id="examOverlay" class="overlay-fs" style="background: white; color: black;">
+    <!-- Exam -->
+    <div id="examOverlay" class="overlay-fs bg-light text-dark">
         <div class="d-flex justify-content-between align-items-center bg-primary text-white p-2 sticky-top">
-            <span class="fw-bold" id="exam-timer">00:00:00</span>
+            <span class="fw-bold" id="exam-timer">00:00</span>
             <button onclick="submitTest()" class="btn btn-sm btn-danger fw-bold">SUBMIT</button>
         </div>
         <div class="container mt-3 pb-5">
-            <div class="d-flex justify-content-between mb-2">
-                <span class="badge bg-secondary">Q. <span id="q-curr">1</span>/<span id="q-total">100</span></span>
-                <span class="badge bg-success">+<span id="marks-pos">2</span></span>
-                <span class="badge bg-danger">-<span id="marks-neg">0.33</span></span>
-            </div>
-            
-            <div class="card shadow-sm mb-3 border-0 bg-light">
+            <div class="card border-0 shadow-sm mb-3">
                 <div class="card-body">
-                    <p class="fw-bold fs-5" id="q-text">Question loading...</p>
+                    <span class="badge bg-secondary mb-2">Q. <span id="q-curr">1</span></span>
+                    <p class="fw-bold" id="q-text">Loading...</p>
                 </div>
             </div>
-
-            <div id="options-container" class="d-grid gap-2 mb-4">
-                <!-- Options injected by JS -->
-            </div>
-
-            <div class="fixed-bottom bg-white border-top p-2 d-flex justify-content-between shadow-lg">
-                <button onclick="prevQ()" class="btn btn-outline-secondary px-4">Prev</button>
-                <button onclick="togglePalette()" class="btn btn-outline-primary"><i class="fas fa-th"></i></button>
+            <div id="options-container" class="d-grid gap-2"></div>
+            
+            <div class="fixed-bottom bg-white p-2 d-flex justify-content-between shadow border-top">
+                <button onclick="prevQ()" class="btn btn-outline-secondary">Prev</button>
                 <button onclick="saveAndNext()" class="btn btn-success px-4">Save & Next</button>
             </div>
         </div>
-        
-        <!-- Question Palette Modal -->
-        <div id="paletteModal" class="p-3 bg-white border-top shadow" style="display:none; position:fixed; bottom:60px; left:0; right:0; max-height:40vh; overflow-y:auto;">
-            <h6 class="text-center fw-bold">Question Palette</h6>
-            <div class="q-palette" id="palette-grid"></div>
-        </div>
     </div>
 
-    <!-- RESULT SCREEN OVERLAY -->
+    <!-- Result -->
     <div id="resultOverlay" class="overlay-fs p-3 text-center">
-        <h3 class="fw-bold text-warning mt-4">RESULT CARD</h3>
-        <div class="glass-card mt-3">
-            <div class="row">
-                <div class="col-4 border-end border-secondary">
-                    <h2 class="fw-bold text-white" id="res-score">0</h2>
-                    <small class="text-white-50">Score</small>
-                </div>
-                <div class="col-4 border-end border-secondary">
-                    <h2 class="fw-bold text-info" id="res-rank">#0</h2>
-                    <small class="text-white-50">Rank</small>
-                </div>
-                <div class="col-4">
-                    <h2 class="fw-bold text-success" id="res-percent">0%</h2>
-                    <small class="text-white-50">Percentile</small>
-                </div>
-            </div>
-            <hr class="border-secondary">
-            <div class="d-flex justify-content-around small">
-                <span class="text-success"><i class="fas fa-check-circle"></i> <span id="res-correct">0</span> Correct</span>
-                <span class="text-danger"><i class="fas fa-times-circle"></i> <span id="res-wrong">0</span> Wrong</span>
-                <span class="text-secondary"><i class="fas fa-minus-circle"></i> <span id="res-skip">0</span> Skipped</span>
+        <h3 class="fw-bold text-warning mt-5">RESULT</h3>
+        <div class="glass-card mt-4">
+            <h1 class="fw-bold" id="res-score">0</h1>
+            <p>Your Score</p>
+            <div class="d-flex justify-content-between mt-3 px-4">
+                <span class="text-success"><i class="fas fa-check"></i> <span id="res-correct">0</span></span>
+                <span class="text-danger"><i class="fas fa-times"></i> <span id="res-wrong">0</span></span>
             </div>
         </div>
-
-        <h5 class="mt-4 text-start fw-bold text-primary">🏆 Top 15 Leaderboard</h5>
-        <div class="glass-card p-0 overflow-hidden">
-            <table class="rank-table text-start">
-                <tbody id="leaderboard-body"></tbody>
-            </table>
-        </div>
-        <button onclick="closeOverlay('resultOverlay')" class="btn btn-light w-100 rounded-pill mt-3 fw-bold">Back to Home</button>
-    </div>
-
-    <!-- INFO PAGE OVERLAY -->
-    <div id="infoOverlay" class="overlay-fs p-4">
-        <h3 id="infoTitle" class="fw-bold text-primary">Page</h3>
-        <div id="infoContent" class="mt-3 lh-lg text-white-50"></div>
-        <button onclick="closeOverlay('infoOverlay')" class="btn btn-secondary mt-5">Close</button>
+        <button onclick="closeOverlay('resultOverlay')" class="btn btn-light w-100 rounded-pill mt-3">Close</button>
     </div>
 
     <script type="module">
@@ -252,12 +177,11 @@
         const provider = new GoogleAuthProvider();
 
         let currentUser = null;
+        let purchases = {}; // Store purchased IDs
         let currentSeries = null;
         let currentPaper = null;
-        let currentPaperIndex = 0;
         let userAnswers = {};
         let timerInterval;
-        let timeLeft = 0;
 
         // AUTH
         window.login = () => signInWithPopup(auth, provider);
@@ -271,66 +195,50 @@
                 document.getElementById('user-name').innerText = user.displayName;
                 document.getElementById('head-img').src = user.photoURL;
                 document.getElementById('prof-img').src = user.photoURL;
-                loadProfile();
-                loadContent();
+                
+                // Fetch Profile
+                get(ref(db, `users/${user.uid}/profile`)).then(snap => {
+                    if(snap.exists()) {
+                        document.getElementById('p-name').value = snap.val().name || user.displayName;
+                        document.getElementById('p-phone').value = snap.val().phone || "";
+                    } else {
+                        document.getElementById('p-name').value = user.displayName;
+                    }
+                });
+
+                fetchPurchases();
             } else {
                 document.getElementById('auth-screen').style.display = 'flex';
             }
         });
 
-        // 1. PROFILE LOGIC
-        async function loadProfile() {
-            const snap = await get(ref(db, `users/${currentUser.uid}/profile`));
-            if(snap.exists()) {
-                const d = snap.val();
-                document.getElementById('p-name').value = d.name || currentUser.displayName;
-                document.getElementById('p-phone').value = d.phone || "";
-                document.getElementById('p-state').value = d.state || "";
-            } else {
-                document.getElementById('p-name').value = currentUser.displayName;
-            }
+        // 1. FETCH PURCHASES & CONTENT
+        function fetchPurchases() {
+            onValue(ref(db, `users/${currentUser.uid}/purchases`), snap => {
+                purchases = snap.val() || {};
+                loadContent(); // Reload content to update buttons
+                loadLibrary(); // Populate library
+            });
         }
 
-        window.toggleEditProfile = () => {
-            const btn = document.getElementById('btn-edit-prof');
-            const inputs = document.querySelectorAll('.input-3d');
-            const isEditing = btn.innerText === "Save Profile";
-
-            if(isEditing) {
-                // Save Logic
-                update(ref(db, `users/${currentUser.uid}/profile`), {
-                    name: document.getElementById('p-name').value,
-                    phone: document.getElementById('p-phone').value,
-                    state: document.getElementById('p-state').value
-                }).then(() => Swal.fire('Saved', 'Profile Updated', 'success'));
-                
-                inputs.forEach(i => i.disabled = true);
-                btn.innerText = "Edit Profile";
-                btn.classList.remove('btn-success');
-                btn.classList.add('bg-primary');
-            } else {
-                // Edit Logic
-                inputs.forEach(i => i.disabled = false);
-                btn.innerText = "Save Profile";
-                btn.classList.remove('bg-primary');
-                btn.classList.add('btn-success');
-            }
-        };
-
-        // 2. LOAD NOTES & TEST SERIES
         function loadContent() {
             // Notes
             onValue(ref(db, 'notes'), snap => {
                 const box = document.getElementById('notes-container');
                 box.innerHTML = '';
                 snap.forEach(c => {
-                    const n = c.val();
+                    const n = c.val(); const k = c.key;
+                    const isOwned = purchases[k];
+                    const btnHtml = isOwned 
+                        ? `<button onclick="downloadPdf('${n.link}')" class="btn btn-sm btn-success w-100 fw-bold"><i class="fas fa-download"></i> Download PDF</button>`
+                        : `<button onclick="buyItem('${k}', 'note', ${n.price})" class="btn btn-sm btn-primary w-100 fw-bold">Buy ₹${n.price}</button>`;
+                    
                     box.innerHTML += `
                         <div class="col-6 col-md-4">
-                            <div class="glass-card p-2" onclick="window.open('${n.link}')">
-                                <img src="${n.thumb || 'https://via.placeholder.com/150'}" class="thumb-img">
-                                <h6 class="fw-bold small mb-1 text-truncate">${n.title}</h6>
-                                <span class="badge bg-primary">₹${n.price}</span>
+                            <div class="glass-card p-2 h-100">
+                                <img src="${n.thumb}" class="thumb-img">
+                                <h6 class="small fw-bold text-truncate">${n.title}</h6>
+                                <div class="mt-2">${btnHtml}</div>
                             </div>
                         </div>`;
                 });
@@ -341,25 +249,111 @@
                 const box = document.getElementById('series-container');
                 box.innerHTML = '';
                 snap.forEach(c => {
-                    const s = c.val();
-                    const sKey = c.key;
+                    const s = c.val(); const k = c.key;
+                    const isOwned = purchases[k];
+                    const btnHtml = isOwned 
+                        ? `<button onclick="openSeries('${k}')" class="btn btn-sm btn-info w-100 fw-bold text-white">Open Series</button>`
+                        : `<button onclick="buyItem('${k}', 'series', ${s.price})" class="btn btn-sm btn-primary w-100 fw-bold">Unlock ₹${s.price}</button>`;
+
                     box.innerHTML += `
                         <div class="col-12">
-                            <div class="glass-card d-flex align-items-center" onclick="openSeries('${sKey}')">
-                                <img src="${s.thumb || 'https://via.placeholder.com/80'}" style="width:80px; height:80px; border-radius:10px; object-fit:cover" class="me-3">
-                                <div>
-                                    <span class="badge bg-warning text-dark mb-1">${s.category || 'Exam'}</span>
-                                    <h5 class="fw-bold mb-1">${s.title}</h5>
-                                    <small class="text-white-50">${s.papers ? s.papers.length : 0} Tests Inside</small>
+                            <div class="glass-card d-flex align-items-center p-2">
+                                <img src="${s.thumb}" style="width:70px;height:70px;border-radius:10px;object-fit:cover" class="me-3">
+                                <div class="flex-grow-1">
+                                    <h6 class="fw-bold mb-1">${s.title}</h6>
+                                    <small class="text-white-50">${s.papers ? s.papers.length : 0} Tests</small>
                                 </div>
-                                <i class="fas fa-chevron-right ms-auto opacity-50"></i>
+                                <div style="width:100px">${btnHtml}</div>
                             </div>
                         </div>`;
                 });
             });
         }
 
-        // 3. SERIES & SUB-TEST LOGIC
+        function loadLibrary() {
+            const libBox = document.getElementById('library-container');
+            libBox.innerHTML = '';
+            
+            // Loop through purchased keys
+            Object.keys(purchases).forEach(async key => {
+                const type = purchases[key]; // 'note' or 'series'
+                const path = type === 'note' ? 'notes' : 'testSeries';
+                
+                const snap = await get(ref(db, `${path}/${key}`));
+                if(snap.exists()) {
+                    const v = snap.val();
+                    const action = type === 'note' 
+                        ? `downloadPdf('${v.link}')` 
+                        : `openSeries('${key}')`;
+                    const btnText = type === 'note' ? 'Download PDF' : 'Open Tests';
+                    const color = type === 'note' ? 'btn-success' : 'btn-info';
+
+                    libBox.innerHTML += `
+                        <div class="col-12">
+                            <div class="glass-card d-flex align-items-center p-2">
+                                <div class="me-3 fs-1 text-white-50"><i class="fas fa-${type==='note'?'file-pdf':'layer-group'}"></i></div>
+                                <div class="flex-grow-1">
+                                    <h6 class="fw-bold mb-0">${v.title}</h6>
+                                    <small class="text-success">Purchased</small>
+                                </div>
+                                <button onclick="${action}" class="btn btn-sm ${color} fw-bold">${btnText}</button>
+                            </div>
+                        </div>`;
+                }
+            });
+        }
+
+        // 2. PAYMENT (RAZORPAY)
+        window.buyItem = (id, type, price) => {
+            // Placeholder for Razorpay
+            var options = {
+                "key": "rzp_test_YOUR_KEY_HERE", // REPLACE WITH YOUR RAZORPAY KEY
+                "amount": price * 100, // Amount in paise
+                "currency": "INR",
+                "name": "Manoj Nehra Hub",
+                "description": "Purchase Content",
+                "handler": function (response){
+                    // On Success
+                    set(ref(db, `users/${currentUser.uid}/purchases/${id}`), type);
+                    Swal.fire('Success', 'Purchase Successful! Added to Library.', 'success');
+                },
+                "prefill": {
+                    "name": currentUser.displayName,
+                    "email": currentUser.email
+                }
+            };
+            
+            // NOTE: For demo, we are Simulating Success directly because Key is missing
+            // Uncomment the lines below to use real Razorpay
+            /*
+            var rzp1 = new Razorpay(options);
+            rzp1.open();
+            */
+           
+           // SIMULATION ONLY (Delete this in production)
+           Swal.fire({
+               title: 'Payment Gateway',
+               text: `Simulating payment of ₹${price}...`,
+               timer: 2000,
+               didOpen: () => Swal.showLoading()
+           }).then(() => {
+               set(ref(db, `users/${currentUser.uid}/purchases/${id}`), type);
+               Swal.fire('Success', 'Item Unlocked!', 'success');
+           });
+        };
+
+        // 3. ACTIONS
+        window.downloadPdf = (url) => {
+            // Direct download trick using link
+            const link = document.createElement('a');
+            link.href = url;
+            link.target = '_blank'; // Opens in new tab (best for PDFs)
+            link.download = 'Study_Material.pdf';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        };
+
         window.openSeries = async (key) => {
             const snap = await get(ref(db, `testSeries/${key}`));
             currentSeries = { ...snap.val(), id: key };
@@ -367,213 +361,139 @@
             document.getElementById('subTestsOverlay').style.display = 'block';
             document.getElementById('seriesTitleDisplay').innerText = currentSeries.title;
             const list = document.getElementById('paper-list-container');
-            list.innerHTML = '<div class="text-center mt-5"><i class="fas fa-spinner fa-spin"></i> Checking Progress...</div>';
+            list.innerHTML = 'Loading...';
 
-            // Get User Results to check locks
+            // Fetch Results for Unlock Logic
             const resSnap = await get(ref(db, `users/${currentUser.uid}/results/${key}`));
             const results = resSnap.val() || {};
 
             list.innerHTML = '';
-            if(!currentSeries.papers) return;
+            if(currentSeries.papers) {
+                currentSeries.papers.forEach((paper, idx) => {
+                    // FIX: Ensure key matching works (convert idx to string if needed)
+                    const prevResult = results[idx - 1]; 
+                    const isLocked = idx > 0 && !prevResult; 
+                    const isDone = results[idx];
 
-            currentSeries.papers.forEach((paper, idx) => {
-                const isLocked = idx > 0 && !results[idx-1]; // Lock if previous not done
-                const hasResult = results[idx];
-                
-                let btnHtml = '';
-                if(isLocked) {
-                    btnHtml = `<button class="btn btn-sm btn-secondary w-100" disabled><i class="fas fa-lock"></i> Locked</button>`;
-                } else if (hasResult) {
-                    btnHtml = `<button onclick="showResult('${key}', ${idx})" class="btn btn-sm btn-info w-100 fw-bold">View Result</button>`;
-                } else {
-                    btnHtml = `<button onclick="startTest(${idx})" class="btn btn-sm btn-primary w-100 fw-bold">Start Test</button>`;
-                }
+                    let btn = '';
+                    if(isLocked) btn = `<button class="btn btn-secondary btn-sm w-100" disabled><i class="fas fa-lock"></i></button>`;
+                    else if(isDone) btn = `<button onclick="showResult('${key}', ${idx})" class="btn btn-success btn-sm w-100">Result</button>`;
+                    else btn = `<button onclick="startTest(${idx})" class="btn btn-primary btn-sm w-100">Start</button>`;
 
-                list.innerHTML += `
-                    <div class="glass-card mb-2 p-3 d-flex align-items-center justify-content-between">
-                        <div>
-                            <h6 class="fw-bold mb-0">${paper.name}</h6>
-                            <small class="text-white-50">${paper.questions.length} Qs | ${paper.duration} Mins</small>
-                        </div>
-                        <div style="width:100px">${btnHtml}</div>
-                    </div>`;
-            });
+                    list.innerHTML += `
+                        <div class="glass-card mb-2 p-3 d-flex justify-content-between align-items-center">
+                            <div>
+                                <h6 class="fw-bold mb-0">${paper.name}</h6>
+                                <small class="text-white-50">${paper.duration} Mins | ${paper.questions.length} Qs</small>
+                            </div>
+                            <div style="width:80px">${btn}</div>
+                        </div>`;
+                });
+            }
         };
 
-        // 4. EXAM ENGINE
+        // 4. EXAM LOGIC (Simplified)
+        let currentQIdx = 0;
         window.startTest = (idx) => {
-            currentPaperIndex = idx;
             currentPaper = currentSeries.papers[idx];
-            userAnswers = {};
-            timeLeft = currentPaper.duration * 60;
+            currentQIdx = 0; userAnswers = {};
             
             document.getElementById('examOverlay').style.display = 'block';
-            document.getElementById('q-total').innerText = currentPaper.questions.length;
-            document.getElementById('marks-pos').innerText = currentSeries.marksPerQ;
-            document.getElementById('marks-neg').innerText = currentSeries.negMark;
-            
-            renderPalette();
             loadQuestion(0);
-            startTimer();
-        };
-
-        let currentQIdx = 0;
-        function loadQuestion(idx) {
-            currentQIdx = idx;
-            const q = currentPaper.questions[idx];
-            document.getElementById('q-curr').innerText = idx + 1;
-            document.getElementById('q-text').innerText = q.q;
             
-            const optsDiv = document.getElementById('options-container');
-            optsDiv.innerHTML = '';
-            ['a','b','c','d'].forEach(opt => {
-                const isSel = userAnswers[idx] === opt ? 'bg-primary text-white' : 'btn-outline-dark';
-                optsDiv.innerHTML += `<button onclick="selectOpt('${opt}', this)" class="btn ${isSel} text-start py-3 fw-bold border shadow-sm">${opt.toUpperCase()}) ${q[opt]}</button>`;
-            });
-            updatePaletteUI();
-        }
-
-        window.selectOpt = (opt, btn) => {
-            userAnswers[currentQIdx] = opt;
-            // Visual Update
-            const btns = document.getElementById('options-container').children;
-            for(let b of btns) { b.classList.remove('bg-primary','text-white'); b.classList.add('btn-outline-dark'); }
-            btn.classList.remove('btn-outline-dark');
-            btn.classList.add('bg-primary', 'text-white');
-        };
-
-        window.saveAndNext = () => {
-            if(currentQIdx < currentPaper.questions.length - 1) loadQuestion(currentQIdx + 1);
-        };
-        window.prevQ = () => {
-            if(currentQIdx > 0) loadQuestion(currentQIdx - 1);
-        };
-        
-        function renderPalette() {
-            const pal = document.getElementById('palette-grid');
-            pal.innerHTML = '';
-            currentPaper.questions.forEach((_, i) => {
-                pal.innerHTML += `<div class="q-btn" id="pal-${i}" onclick="loadQuestion(${i});togglePalette()">${i+1}</div>`;
-            });
-        }
-        function updatePaletteUI() {
-            for(let i=0; i<currentPaper.questions.length; i++) {
-                const el = document.getElementById(`pal-${i}`);
-                if(i === currentQIdx) el.classList.add('active'); else el.classList.remove('active');
-                if(userAnswers[i]) el.classList.add('answered');
-            }
-        }
-        window.togglePalette = () => {
-            const p = document.getElementById('paletteModal');
-            p.style.display = p.style.display === 'none' ? 'block' : 'none';
-        };
-
-        function startTimer() {
+            // Timer
+            let timeLeft = currentPaper.duration * 60;
             clearInterval(timerInterval);
             timerInterval = setInterval(() => {
                 timeLeft--;
-                const m = Math.floor(timeLeft / 60);
-                const s = timeLeft % 60;
-                document.getElementById('exam-timer').innerText = `${m}:${s < 10 ? '0'+s : s}`;
+                let m = Math.floor(timeLeft/60); let s = timeLeft%60;
+                document.getElementById('exam-timer').innerText = `${m}:${s<10?'0'+s:s}`;
                 if(timeLeft <= 0) submitTest();
             }, 1000);
-        }
+        };
 
-        // 5. SUBMIT & RESULT
-        window.submitTest = async () => {
+        function loadQuestion(i) {
+            currentQIdx = i;
+            const q = currentPaper.questions[i];
+            document.getElementById('q-curr').innerText = i + 1;
+            document.getElementById('q-text').innerText = q.q;
+            
+            const box = document.getElementById('options-container');
+            box.innerHTML = '';
+            ['a','b','c','d'].forEach(opt => {
+                const sel = userAnswers[i] === opt ? 'bg-primary text-white' : 'btn-outline-dark';
+                box.innerHTML += `<button onclick="selOpt(${i},'${opt}')" class="btn ${sel} text-start p-3 fw-bold border">${opt.toUpperCase()}) ${q[opt]}</button>`;
+            });
+        }
+        
+        window.selOpt = (i, opt) => { userAnswers[i] = opt; loadQuestion(i); }
+        window.saveAndNext = () => { if(currentQIdx < currentPaper.questions.length-1) loadQuestion(currentQIdx+1); }
+        window.prevQ = () => { if(currentQIdx > 0) loadQuestion(currentQIdx-1); }
+
+        window.submitTest = () => {
             clearInterval(timerInterval);
             document.getElementById('examOverlay').style.display = 'none';
             
-            // Calculate Score
+            // Calc Score
             let score = 0, correct = 0, wrong = 0;
             currentPaper.questions.forEach((q, i) => {
                 if(userAnswers[i]) {
-                    if(userAnswers[i] === q.ans) {
-                        score += parseFloat(currentSeries.marksPerQ);
-                        correct++;
-                    } else {
-                        score -= parseFloat(currentSeries.negMark);
-                        wrong++;
-                    }
+                    if(userAnswers[i] === q.ans) { score += parseFloat(currentSeries.marksPerQ); correct++; }
+                    else { score -= parseFloat(currentSeries.negMark); wrong++; }
                 }
             });
 
-            // Save Result
-            const resultData = {
-                score: score.toFixed(2),
-                correct, wrong,
-                skipped: currentPaper.questions.length - (correct + wrong),
-                totalMarks: currentPaper.questions.length * currentSeries.marksPerQ,
-                timestamp: Date.now(),
-                user: currentUser.displayName
-            };
+            // SAVE RESULT CORRECTLY (Key = Index)
+            // Use currentSeries.papers.indexOf(currentPaper) to get Index safely
+            const paperIdx = currentSeries.papers.indexOf(currentPaper);
             
-            await set(ref(db, `users/${currentUser.uid}/results/${currentSeries.id}/${currentPaperIndex}`), resultData);
-            
-            // Save for Leaderboard (Simplified: Separate Node)
-            await set(ref(db, `leaderboard/${currentSeries.id}/${currentPaperIndex}/${currentUser.uid}`), {
-                name: currentUser.displayName,
-                score: parseFloat(score.toFixed(2)),
-                photo: currentUser.photoURL
+            set(ref(db, `users/${currentUser.uid}/results/${currentSeries.id}/${paperIdx}`), {
+                score: score.toFixed(2), correct, wrong, timestamp: Date.now()
+            }).then(() => {
+                showResultUI({score: score.toFixed(2), correct, wrong});
+                // Reload SubTests to update Locks
+                openSeries(currentSeries.id); 
             });
-
-            // Show Result
-            showResultUI(resultData, currentSeries.id, currentPaperIndex);
         };
 
-        window.showResult = async (sId, pId) => {
-            const snap = await get(ref(db, `users/${currentUser.uid}/results/${sId}/${pId}`));
-            if(snap.exists()) showResultUI(snap.val(), sId, pId);
+        window.showResult = async (sid, pid) => {
+            const snap = await get(ref(db, `users/${currentUser.uid}/results/${sid}/${pid}`));
+            if(snap.exists()) showResultUI(snap.val());
         };
 
-        async function showResultUI(data, sId, pId) {
+        function showResultUI(data) {
             document.getElementById('resultOverlay').style.display = 'block';
             document.getElementById('res-score').innerText = data.score;
             document.getElementById('res-correct').innerText = data.correct;
             document.getElementById('res-wrong').innerText = data.wrong;
-            document.getElementById('res-skip').innerText = data.skipped;
-
-            // Fetch Leaderboard & Calculate Rank
-            const lSnap = await get(ref(db, `leaderboard/${sId}/${pId}`));
-            const lbData = [];
-            lSnap.forEach(c => lbData.push(c.val()));
-            
-            // Sort by Score Descending
-            lbData.sort((a, b) => b.score - a.score);
-            
-            // Find My Rank
-            const myRank = lbData.findIndex(u => u.name === currentUser.displayName) + 1;
-            document.getElementById('res-rank').innerText = `#${myRank}`;
-            
-            // Render Top 15
-            const tbody = document.getElementById('leaderboard-body');
-            tbody.innerHTML = '';
-            lbData.slice(0, 15).forEach((u, i) => {
-                const icon = i===0 ? '👑' : (i===1 ? '🥈' : (i===2 ? '🥉' : `${i+1}.`));
-                const cls = i===0 ? 'text-warning' : 'text-white';
-                tbody.innerHTML += `
-                    <tr>
-                        <td class="${cls} fw-bold" style="width:50px">${icon}</td>
-                        <td><img src="${u.photo}" class="rounded-circle me-2" width="25">${u.name}</td>
-                        <td class="text-end fw-bold">${u.score}</td>
-                    </tr>`;
-            });
         }
 
-        // Utils
+        // 5. PROFILE EDIT
+        window.toggleEditProfile = () => {
+            const inputs = [document.getElementById('p-name'), document.getElementById('p-phone')];
+            const btn = document.getElementById('btn-edit-prof');
+            const isEditing = !inputs[0].disabled;
+
+            if(isEditing) {
+                update(ref(db, `users/${currentUser.uid}/profile`), {
+                    name: inputs[0].value, phone: inputs[1].value
+                });
+                inputs.forEach(i => i.disabled = true);
+                btn.innerText = "Edit Profile";
+            } else {
+                inputs.forEach(i => i.disabled = false);
+                btn.innerText = "Save Profile";
+            }
+        };
+
+        // UI UTILS
         window.nav = (id, el) => {
             document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
             document.getElementById(id).classList.add('active');
-            document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
-            el.classList.add('active');
+            document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+            if(el) el.classList.add('active');
         };
         window.closeOverlay = (id) => document.getElementById(id).style.display = 'none';
-        window.openPage = async (t) => {
-            document.getElementById('infoOverlay').style.display = 'block';
-            document.getElementById('infoTitle').innerText = t.toUpperCase();
-            const s = await get(ref(db, `pages/${t}`));
-            document.getElementById('infoContent').innerHTML = s.val() || "Loading...";
-        };
 
     </script>
 </body>
