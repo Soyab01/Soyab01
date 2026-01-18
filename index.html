@@ -218,4 +218,260 @@
             document.getElementById('login-error').style.display = 'none';
             signInWithPopup(auth, provider).catch((error) => {
                 document.getElementById('login-error').style.display = 'block';
-                document.getElementById('login-error')
+                document.getElementById('login-error').innerText = "Error: " + error.message;
+            });
+        };
+
+        window.logout = () => signOut(auth).then(() => location.reload());
+
+        // --- NEW VARIABLES FOR TIME TRACKING ---
+        let currentExamQs = [], userAnswers = [], qIdx = 0, examTimer, curPos = 1, curRatio = 3;
+        let activeSeriesId = "", activeTestIdx = 0;
+        let globalScoreHidden = true;
+        let lastFetchedTotalScore = 0;
+        
+        let questionDurations = []; // Stores seconds per question
+        let lastQTime = 0; // Timestamp when question started
+
+        onAuthStateChanged(auth, user => {
+            if (user) {
+                document.getElementById('auth-screen').style.display = 'none';
+                document.getElementById('main-app').style.display = 'block';
+                document.getElementById('u-name').innerText = user.displayName;
+                document.getElementById('u-img').src = user.photoURL;
+                document.getElementById('user-display-name').innerText = user.displayName;
+                loadNotes(); loadTestSeries(); loadUserProfile();
+            } else {
+                document.getElementById('auth-screen').style.display = 'flex';
+                document.getElementById('main-app').style.display = 'none';
+            }
+        });
+
+        // --- Profile Logic ---
+        async function loadUserProfile() {
+            const snap = await get(ref(db, `users/${auth.currentUser.uid}/profile`));
+            if(snap.exists()) {
+                const data = snap.val();
+                document.getElementById('p-name').value = data.name || auth.currentUser.displayName;
+                document.getElementById('p-phone').value = data.phone || "";
+                document.getElementById('p-state').value = data.state || "";
+            } else {
+                document.getElementById('p-name').value = auth.currentUser.displayName;
+            }
+        }
+
+        window.toggleProfileEdit = () => {
+            const inputs = ['p-name', 'p-phone', 'p-state'];
+            const isDisabled = document.getElementById('p-name').disabled;
+            inputs.forEach(id => document.getElementById(id).disabled = !isDisabled);
+            document.getElementById('btn-save-profile').style.display = isDisabled ? 'block' : 'none';
+            document.getElementById('btn-edit-profile').innerHTML = isDisabled ? '<i class="fa fa-times"></i> Cancel' : '<i class="fa fa-pencil"></i> Edit';
+        };
+
+        window.saveProfile = async () => {
+            const data = {
+                name: document.getElementById('p-name').value,
+                phone: document.getElementById('p-phone').value,
+                state: document.getElementById('p-state').value
+            };
+            if(!data.phone || !data.state) return Swal.fire('Error', 'Please fill all details', 'warning');
+            await set(ref(db, `users/${auth.currentUser.uid}/profile`), data);
+            window.toggleProfileEdit();
+            Swal.fire('Success', 'Profile Updated!', 'success');
+        };
+
+        window.openPageModal = async (pageType) => {
+            document.getElementById('page-overlay').style.display = 'flex';
+            document.getElementById('page-title').innerText = pageType === 'privacy' ? "Privacy Policy" : "About Us";
+            document.getElementById('page-body').innerText = "Loading content...";
+            const snap = await get(ref(db, `appPages/${pageType}`));
+            document.getElementById('page-body').innerHTML = snap.val() || "No content available.";
+        };
+
+        window.toggleGlobalScore = () => {
+            globalScoreHidden = !globalScoreHidden;
+            const text = document.getElementById('global-score-text');
+            const icon = document.getElementById('score-toggle-icon');
+            if(globalScoreHidden) { text.innerText = "****"; icon.className = "fa fa-eye-slash"; } 
+            else { text.innerText = lastFetchedTotalScore.toFixed(2); icon.className = "fa fa-eye"; }
+        };
+
+        async function loadNotes() {
+            if(!auth.currentUser) return;
+            const snap = await get(ref(db, `users/${auth.currentUser.uid}/purchases/notes`));
+            const purchased = snap.exists() ? snap.val() : {};
+            const notes = [
+                {id:"note1", title:"Rajasthan Police Notes", price:99, file: "raj. police.pdf"},
+                {id:"note2", title:"Patwari Special Notes", price:149, file: "patwari.pdf"}
+            ];
+            let html = '', libHtml = '';
+            notes.forEach(n => {
+                const isPaid = purchased[n.id]?.paid;
+                html += `<div class="col-12"><div class="glass-card d-flex justify-content-between align-items-center"><h6>${n.title}</h6><button class="btn-premium" onclick="${isPaid?`openReader('${n.file}')` : `buyNote('${n.id}',${n.price})`}">${isPaid?'पढ़ें':'₹'+n.price}</button></div></div>`;
+                if(isPaid) libHtml += `<div class="glass-card d-flex justify-content-between align-items-center"><h6>${n.title}</h6><button class="btn btn-sm btn-success" onclick="openReader('${n.file}')">OPEN</button></div>`;
+            });
+            document.getElementById('notesGrid').innerHTML = html;
+            document.getElementById('myNotesGrid').innerHTML = libHtml || '<p class="small opacity-50">कोई नोट्स नहीं हैं</p>';
+        }
+
+        function loadTestSeries() {
+            if(!auth.currentUser) return;
+            onValue(ref(db, 'testSeries'), async snap => {
+                const data = snap.val(); if(!data) return;
+                const pSnap = await get(ref(db, `users/${auth.currentUser.uid}/purchases/tests`));
+                const purchased = pSnap.exists() ? pSnap.val() : {};
+                const grid = document.getElementById('testSeriesGrid'); grid.innerHTML = "";
+                const lib = document.getElementById('myTestsGrid'); lib.innerHTML = "";
+                Object.keys(data).forEach(id => {
+                    const s = data[id]; const isPaid = purchased[id]?.paid;
+                    grid.innerHTML += `<div class="col-6 col-md-4"><div class="glass-card text-center p-2"><img src="${s.image}" class="test-card-img"><h6 class="small fw-bold">${s.title}</h6><button onclick="handleTestAction('${id}',${s.price},'${s.title}')" class="btn-premium w-100 mt-2">${isPaid?'OPEN':'₹'+s.price}</button></div></div>`;
+                    if(isPaid) lib.innerHTML += `<div class="glass-card d-flex justify-content-between align-items-center"><h6>${s.title}</h6><button onclick="openTestList('${id}','${s.title}')" class="btn btn-sm btn-primary">VIEW TESTS</button></div>`;
+                });
+            });
+        }
+
+        window.handleTestAction = async (id, price, title) => {
+            const snap = await get(ref(db, `users/${auth.currentUser.uid}/purchases/tests/${id}`));
+            if(snap.exists() && snap.val().paid) openTestList(id, title);
+            else buyTest(id, price);
+        };
+
+        window.buyNote = (id, p) => { new Razorpay({key:"rzp_live_Ry7zglI0OnE1Jo", amount:p*100, name:"Manoj Nehra", handler: async()=> { await set(ref(db,`users/${auth.currentUser.uid}/purchases/notes/${id}`),{paid:true}); loadNotes(); }}).open(); };
+        window.buyTest = (id, p) => { new Razorpay({key:"rzp_live_Ry7zglI0OnE1Jo", amount:p*100, name:"Manoj Nehra", handler: async()=> { await set(ref(db,`users/${auth.currentUser.uid}/purchases/tests/${id}`),{paid:true}); loadTestSeries(); }}).open(); };
+
+        window.openTestList = async (id, title) => {
+            activeSeriesId = id;
+            document.getElementById('testListOverlay').style.display = 'flex';
+            document.getElementById('current-series-title').innerText = title;
+            
+            const seriesSnap = await get(ref(db, `testSeries/${id}`));
+            const tests = JSON.parse(seriesSnap.val().questions || "[]");
+            const progressSnap = await get(ref(db, `users/${auth.currentUser.uid}/testResults/${id}`));
+            const results = progressSnap.exists() ? progressSnap.val() : {};
+            
+            lastFetchedTotalScore = Object.values(results).reduce((a, b) => a + b, 0);
+            if(!globalScoreHidden) document.getElementById('global-score-text').innerText = lastFetchedTotalScore.toFixed(2);
+            await set(ref(db, `users/${auth.currentUser.uid}/totalScore`), lastFetchedTotalScore);
+
+            const box = document.getElementById('test-list-container'); box.innerHTML = "";
+            tests.forEach((t, i) => {
+                const isCompleted = results[i] !== undefined;
+                const isLocked = i > 0 && results[i-1] === undefined;
+                box.innerHTML += `<div class="glass-card d-flex justify-content-between align-items-center ${isLocked ? 'lock-icon' : ''}">
+                    <div><b>Mock Test ${i+1}</b><br><small>${t.length} Qns ${isCompleted ? `| Score: ${results[i].toFixed(1)}` : ''}</small></div>
+                    <button class="btn ${isLocked ? 'btn-secondary' : 'btn-primary'} btn-sm rounded-pill" onclick="${isLocked ? '' : `startExamNow('${id}',${i})`}" ${isLocked ? 'disabled' : ''}>${isCompleted ? 'RETEST' : (isLocked ? '<i class="fa fa-lock"></i>' : 'START')}</button>
+                </div>`;
+            });
+        };
+        window.closeTestList = () => document.getElementById('testListOverlay').style.display = 'none';
+
+        window.startExamNow = async (seriesId, index) => {
+            activeTestIdx = index;
+            const snap = await get(ref(db, `testSeries/${seriesId}`)); const s = snap.val();
+            
+            // --- TIME SETUP ---
+            curPos = parseFloat(s.posMarks) || 1; curRatio = parseFloat(s.negRatio) || 3;
+            let durationMins = parseInt(s.duration) || 60; // Get duration from DB
+            
+            currentExamQs = JSON.parse(s.questions)[index]; 
+            userAnswers = new Array(currentExamQs.length).fill(null);
+            
+            // Initialize Per Question Time Tracker
+            questionDurations = new Array(currentExamQs.length).fill(0);
+            lastQTime = Date.now(); // Start tracking first question
+
+            qIdx = 0; closeTestList();
+            document.getElementById('exam-overlay').style.display = 'flex';
+            document.querySelector('.nav-dock').style.display = 'none';
+            renderQuestion(); startTimer(durationMins * 60);
+        };
+
+        function renderQuestion() {
+            const q = currentExamQs[qIdx]; document.getElementById('q-num').innerText = `Question ${qIdx+1}/${currentExamQs.length}`;
+            document.getElementById('q-text').innerText = q.q; const box = document.getElementById('opt-box'); box.innerHTML = "";
+            q.options.forEach(o => box.innerHTML += `<button onclick="selectOpt('${o}')" class="opt-btn ${userAnswers[qIdx]===o?'selected':''}">${o}</button>`);
+        }
+
+        // --- Helper to track time before switching ---
+        function trackTime() {
+            let now = Date.now();
+            let timeSpent = (now - lastQTime) / 1000; // in seconds
+            questionDurations[qIdx] += timeSpent;
+            lastQTime = now;
+        }
+
+        window.selectOpt = (o) => { userAnswers[qIdx] = o; renderQuestion(); setTimeout(() => { if(qIdx < currentExamQs.length - 1) { trackTime(); qIdx++; renderQuestion(); } }, 300); };
+        window.nextQ = () => { if(qIdx < currentExamQs.length - 1) { trackTime(); qIdx++; renderQuestion(); } };
+        window.prevQ = () => { if(qIdx > 0) { trackTime(); qIdx--; renderQuestion(); } };
+
+        function startTimer(s) { clearInterval(examTimer); examTimer = setInterval(() => { s--; let m=Math.floor(s/60), sec=s%60; document.getElementById('exam-timer').innerText=`${m}:${sec<10?'0':''}${sec}`; if(s<=0) finishExam(); }, 1000); }
+
+        window.finishExam = async () => {
+            trackTime(); // Save time for the last question
+            clearInterval(examTimer); 
+            document.getElementById('exam-overlay').style.display = 'none';
+            let correct = 0, wrong = 0;
+            currentExamQs.forEach((q, i) => { if(userAnswers[i] === (q.ans || q.answer)) correct++; else if(userAnswers[i] !== null) wrong++; });
+            let deduction = (wrong * (curPos / curRatio));
+            let total = (correct * curPos) - deduction;
+            
+            await set(ref(db, `users/${auth.currentUser.uid}/testResults/${activeSeriesId}/${activeTestIdx}`), total);
+            
+            document.getElementById('res-score').innerText = total.toFixed(2);
+            document.getElementById('result-overlay').style.display = 'block';
+            document.getElementById('review-container').style.display = 'none';
+            
+            loadLeaderboard(); 
+        };
+
+        function loadLeaderboard() {
+            const list = document.getElementById('leaderboard-list');
+            const q = query(ref(db, 'users'), orderByChild('totalScore'), limitToLast(15));
+            onValue(q, (snap) => {
+                list.innerHTML = "";
+                let users = [];
+                snap.forEach(child => users.push({name: child.val().profile?.name || "User", score: child.val().totalScore || 0}));
+                users.reverse(); 
+                users.forEach((u, i) => {
+                    list.innerHTML += `<div class="rank-row"><div class="d-flex gap-3"><span class="rank-num">#${i+1}</span> <span>${u.name}</span></div><span class="text-warning fw-bold">${u.score.toFixed(1)}</span></div>`;
+                });
+            });
+        }
+
+        window.showReviewAnswerKey = () => {
+             const box = document.getElementById('review-container'); box.innerHTML = "";
+             currentExamQs.forEach((q, i) => {
+                const isR = userAnswers[i] === (q.ans || q.answer);
+                // SHOWING TIME TAKEN HERE
+                let timeTaken = Math.round(questionDurations[i]);
+                box.innerHTML += `<div class="review-card ${isR?'correct':'wrong'}">
+                    <div class="d-flex justify-content-between mb-2">
+                        <h6>Q.${i+1}</h6>
+                        <span class="badge bg-secondary"><i class="fa fa-clock me-1"></i>${timeTaken}s</span>
+                    </div>
+                    <p class="fw-bold">${q.q}</p>
+                    <p class="small mb-1">आपका: ${userAnswers[i]||'None'}</p>
+                    <p class="small text-success">सही: ${q.ans||q.answer}</p>
+                </div>`;
+            });
+            box.style.display = 'block';
+        };
+
+        window.closeReview = () => { 
+            document.getElementById('result-overlay').style.display = 'none'; 
+            document.querySelector('.nav-dock').style.display = 'flex'; 
+            openTestList(activeSeriesId, document.getElementById('current-series-title').innerText);
+        };
+        
+        window.showPage = (id, el) => { document.querySelectorAll('.page').forEach(p => p.classList.remove('active')); document.getElementById(id).classList.add('active'); document.querySelectorAll('.nav-link-3d').forEach(n => n.classList.remove('active')); if(el) el.classList.add('active'); };
+
+        window.openReader = (file) => {
+            let pdfUrl = window.location.href.split('index.html')[0] + encodeURIComponent(file);
+            document.getElementById('reader-overlay').style.display = 'block';
+            document.getElementById('pdfViewer').src = "https://docs.google.com/viewer?url=" + encodeURIComponent(pdfUrl) + "&embedded=true";
+            document.getElementById('btn-download').onclick = () => window.open(pdfUrl, '_blank');
+        };
+        window.closeReader = () => { document.getElementById('reader-overlay').style.display = 'none'; document.getElementById('pdfViewer').src = ""; };
+    </script>
+</body>
+</html>
