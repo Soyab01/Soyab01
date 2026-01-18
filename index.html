@@ -3,329 +3,349 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Manoj Nehra | Official Hub</title>
+    <title>Manoj Nehra | Learning Hub</title>
     
-    <!-- CSS Assets -->
+    <!-- Assets -->
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;800&display=swap" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
     
     <style>
         :root { 
             --primary: #6366f1; 
-            --accent: #8b5cf6;
-            --glass: rgba(255, 255, 255, 0.08); 
-            --bg-gradient: linear-gradient(135deg, #0f172a 0%, #1e1b4b 50%, #312e81 100%);
-            --shadow-3d: 0 20px 50px rgba(0,0,0,0.5), inset 2px 2px 10px rgba(255,255,255,0.05);
+            --accent: #a855f7;
+            --dark: #0f172a;
+            --glass: rgba(255, 255, 255, 0.05); 
+            --bg-gradient: linear-gradient(135deg, #020617 0%, #1e1b4b 100%);
         }
 
         body { 
             background: var(--bg-gradient); color: #f8fafc; 
             font-family: 'Poppins', sans-serif; min-height: 100vh; 
-            overflow-x: hidden; padding-bottom: 120px; user-select: none; 
+            padding-bottom: 100px; -webkit-tap-highlight-color: transparent;
         }
 
-        /* --- UI Components --- */
+        /* --- Glassmorphism Cards --- */
         .glass-card { 
-            background: var(--glass); backdrop-filter: blur(25px); 
-            border: 1px solid rgba(255,255,255,0.15); border-radius: 30px; 
-            padding: 25px; box-shadow: var(--shadow-3d); 
+            background: var(--glass); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255,255,255,0.1); border-radius: 24px; 
+            padding: 20px; position: relative; overflow: hidden;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .glass-card:active { transform: scale(0.98); }
+        .glass-card:hover { transform: translateY(-5px); box-shadow: 0 10px 30px rgba(99, 102, 241, 0.2); }
+
+        .price-badge { 
+            position: absolute; top: 15px; right: 15px; 
+            background: rgba(99, 102, 241, 0.9); color: white; 
+            padding: 4px 12px; border-radius: 12px; font-weight: 700; font-size: 0.85rem;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
         }
 
-        /* --- 3D Profile UX --- */
-        .profile-3d-wrap { perspective: 1000px; max-width: 450px; margin: auto; }
-        .profile-inner {
-            background: rgba(255, 255, 255, 0.03); border-radius: 40px; padding: 35px 20px;
-            border: 1px solid rgba(255,255,255,0.1); box-shadow: 25px 25px 60px rgba(0,0,0,0.6);
+        /* --- 3D Buttons & Inputs --- */
+        .btn-3d {
+            background: linear-gradient(145deg, #6366f1, #4f46e5);
+            border: none; color: white; width: 100%; padding: 12px;
+            border-radius: 16px; font-weight: 700; box-shadow: 0 4px 0 #3730a3;
+            transition: all 0.1s;
         }
-        .btn-3d-tile {
-            background: linear-gradient(145deg, rgba(255,255,255,0.05), rgba(0,0,0,0.2));
-            border: 1px solid rgba(255,255,255,0.08); border-radius: 20px;
-            padding: 18px 25px; margin-bottom: 15px; display: flex; align-items: center;
-            color: white; text-decoration: none; transition: 0.3s;
-            box-shadow: 8px 8px 20px rgba(0,0,0,0.3);
+        .btn-3d:active { transform: translateY(4px); box-shadow: 0 0 0 #3730a3; }
+
+        .input-3d {
+            background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 16px; padding: 12px; color: white; width: 100%;
+            text-align: center; font-weight: 600; outline: none; margin-bottom: 10px;
+            box-shadow: inset 0 2px 5px rgba(0,0,0,0.5);
         }
-        .btn-3d-tile:active { transform: scale(0.95) translateZ(-10px); }
-        .btn-3d-tile i { font-size: 1.4rem; margin-right: 15px; color: var(--primary); }
+        .input-3d:focus { border-color: var(--primary); }
 
-        .input-group-3d { background: rgba(0,0,0,0.3); border-radius: 15px; padding: 10px; margin-bottom: 12px; border: 1px solid rgba(255,255,255,0.05); box-shadow: inset 3px 3px 10px rgba(0,0,0,0.4); }
-        .input-group-3d input { background: transparent; border: none; color: white; width: 100%; text-align: center; font-weight: 600; outline: none; }
+        /* --- Profile 3D --- */
+        .profile-wrap { perspective: 1000px; padding: 20px; }
+        .profile-card {
+            background: rgba(255,255,255,0.03); border-radius: 30px; padding: 30px 20px;
+            border: 1px solid rgba(255,255,255,0.1); text-align: center;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+        }
+        .menu-btn {
+            background: rgba(255,255,255,0.05); padding: 15px; border-radius: 15px;
+            margin-bottom: 10px; display: flex; align-items: center; cursor: pointer;
+            border: 1px solid rgba(255,255,255,0.05); transition: 0.2s;
+        }
+        .menu-btn:active { background: rgba(255,255,255,0.1); }
+        .menu-btn i { width: 30px; color: var(--accent); font-size: 1.2rem; }
 
-        /* --- Centered Login --- */
-        #auth-screen { position: fixed; inset: 0; background: #020617; z-index: 9000; display: flex; align-items: center; justify-content: center; }
-        .login-box { text-align: center; width: 90%; max-width: 400px; animation: zoomIn 0.5s; }
-        .login-logo { width: 110px; height: 110px; border-radius: 50%; border: 4px solid var(--primary); margin-bottom: 25px; box-shadow: 0 0 30px var(--primary); }
+        /* --- Navigation Dock --- */
+        .nav-dock { 
+            position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); 
+            width: 90%; max-width: 400px; background: rgba(15, 23, 42, 0.95); 
+            border-radius: 25px; display: flex; justify-content: space-around; 
+            padding: 12px; z-index: 1000; border: 1px solid rgba(255,255,255,0.15);
+            box-shadow: 0 10px 40px rgba(0,0,0,0.5); backdrop-filter: blur(10px);
+        }
+        .nav-item { 
+            text-align: center; color: rgba(255,255,255,0.5); font-size: 0.7rem; 
+            cursor: pointer; transition: 0.3s; flex: 1;
+        }
+        .nav-item i { font-size: 1.4rem; display: block; margin-bottom: 2px; }
+        .nav-item.active { color: var(--primary); transform: translateY(-5px); }
 
-        /* --- Navigation --- */
-        .nav-dock { position: fixed; bottom: 15px; left: 50%; transform: translateX(-50%); width: 95%; max-width: 500px; background: rgba(15, 23, 42, 0.98); border-radius: 35px; display: flex; justify-content: space-around; padding: 12px 5px; z-index: 8000; border: 1px solid rgba(255,255,255,0.1); box-shadow: 0 25px 70px rgba(0,0,0,0.8); }
-        .nav-link-3d { color: rgba(255,255,255,0.4); text-decoration: none; text-align: center; flex: 1; font-size: 0.75rem; cursor: pointer; transition: 0.4s; }
-        .nav-link-3d.active { color: var(--primary); transform: translateY(-8px) scale(1.1); text-shadow: 0 0 15px var(--primary); }
-        .nav-link-3d i { font-size: 1.3rem; display: block; margin-bottom: 3px; }
+        /* --- Overlays & Modals --- */
+        .overlay { display: none; position: fixed; inset: 0; background: #020617; z-index: 2000; overflow-y: auto; padding: 20px; animation: fadeInUp 0.3s; }
+        .page { display: none; animation: fadeIn 0.4s; }
+        .page.active { display: block; }
 
-        /* --- Modals --- */
-        #info-page-overlay { display: none; position: fixed; inset: 0; background: #010413; z-index: 9999; flex-direction: column; padding: 25px; overflow-y: auto; }
-        .info-header { position: sticky; top: 0; background: #010413; padding: 10px 0; z-index: 10; border-bottom: 1px solid rgba(255,255,255,0.1); margin-bottom: 20px; }
-        .info-body { color: rgba(255,255,255,0.7); font-size: 0.95rem; line-height: 1.8; text-align: justify; }
-
-        .page { display: none; } .page.active { display: block; animation: fadeInUp 0.5s; }
-        #exam-overlay, #testListOverlay, #result-overlay { display: none; position: fixed; inset: 0; background: #020617; z-index: 9995; flex-direction: column; overflow-y:auto; }
+        /* Login Screen */
+        #auth-screen { position: fixed; inset: 0; z-index: 5000; background: #020617; display: flex; align-items: center; justify-content: center; }
     </style>
 </head>
 <body oncontextmenu="return false;">
 
-    <!-- LOGIN SCREEN -->
+    <!-- 1. LOGIN SCREEN -->
     <div id="auth-screen">
-        <div class="login-box glass-card">
-            <img src="./manoj.jpg.jpg" class="login-logo" onerror="this.src='https://via.placeholder.com/110'">
-            <h2 class="fw-800">MANOJ NEHRA</h2>
-            <p class="small opacity-75 mb-4">Official Preparation Platform</p>
-            <button onclick="login()" class="btn btn-light w-100 rounded-pill py-3 fw-bold shadow-lg mb-3">
-                <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" width="20" class="me-2">
-                Sign in with Google
+        <div class="glass-card text-center" style="width: 85%; max-width: 350px;">
+            <img src="./manoj.jpg.jpg" class="rounded-circle border border-3 border-primary shadow mb-3" width="90" height="90" onerror="this.src='https://via.placeholder.com/90'">
+            <h3 class="fw-bold mb-1">Manoj Nehra</h3>
+            <p class="small text-muted mb-4">Official Preparation App</p>
+            <button onclick="login()" class="btn btn-light w-100 rounded-pill py-2 fw-bold mb-3">
+                <i class="fab fa-google me-2"></i> Sign In
             </button>
-            <p class="small opacity-50" onclick="showInfoPage('privacy')">By continuing, you accept our <u class="text-primary cursor-pointer">Privacy Policy</u></p>
+            <div class="small text-white-50" onclick="openPageOverlay('privacy')">Read <u class="text-primary">Privacy Policy</u></div>
         </div>
     </div>
 
-    <!-- MAIN APP UI -->
+    <!-- 2. MAIN APPLICATION -->
     <div id="main-app" style="display:none;">
-        <header class="container pt-4">
-            <div class="d-flex align-items-center gap-3">
-                <img src="./manoj.jpg.jpg" onerror="this.src='https://via.placeholder.com/50'" style="width:50px; height:50px; border-radius: 50%; border: 2px solid var(--primary);">
-                <div>
-                    <h6 class="fw-bold mb-0">MANOJ NEHRA</h6>
-                    <div id="welcome-user" class="small text-info fw-bold">Welcome, Student</div>
+        
+        <!-- Header -->
+        <div class="container pt-3 pb-2 sticky-top" style="background: rgba(2,6,23,0.95); z-index: 900;">
+            <div class="d-flex align-items-center">
+                <img id="head-img" src="" class="rounded-circle border border-secondary" width="45" height="45">
+                <div class="ms-3">
+                    <h6 class="mb-0 fw-bold" id="user-name">Loading...</h6>
+                    <small class="text-success fw-bold">Online Student</small>
                 </div>
             </div>
-        </header>
+        </div>
 
-        <div class="container mt-3">
-            <!-- Home Page -->
+        <div class="container mt-2">
+            
+            <!-- A. HOME (NOTES) -->
             <div id="homePage" class="page active">
-                <div class="py-3"><h3 class="fw-800">Premium Study Notes</h3></div>
-                <div id="notesGrid" class="row g-3"></div>
+                <h5 class="fw-bold mb-3 ps-1 border-start border-4 border-primary ps-2">Latest PDF Notes</h5>
+                <div id="notes-container" class="row g-3 pb-5">
+                    <!-- Notes loaded from Firebase -->
+                    <div class="text-center text-muted mt-5"><i class="fas fa-spinner fa-spin"></i> Syncing...</div>
+                </div>
             </div>
 
-            <!-- Tests Page -->
-            <div id="testSeriesPage" class="page">
-                <div class="py-3 text-center"><h3 class="fw-800">Online Mock Tests</h3></div>
-                <div id="testSeriesGrid" class="row g-3"></div>
+            <!-- B. TESTS -->
+            <div id="testsPage" class="page">
+                <h5 class="fw-bold mb-3 ps-1 border-start border-4 border-info ps-2">Online Test Series</h5>
+                <div id="tests-container" class="row g-3 pb-5">
+                    <!-- Tests loaded from Firebase -->
+                </div>
             </div>
 
-            <!-- Library Page -->
-            <div id="purchasePage" class="page">
-                <h3 class="text-center py-4">My Library</h3>
-                <div id="myNotesGrid" class="mb-4"></div>
-                <div id="myTestsGrid"></div>
-            </div>
-
-            <!-- 3D Profile Page -->
+            <!-- C. PROFILE -->
             <div id="profilePage" class="page">
-                <div class="profile-3d-wrap mt-4">
-                    <div class="profile-inner text-center">
-                        <img id="u-img" src="" class="rounded-circle mb-4 shadow-lg" style="width: 110px; height:110px; border: 4px solid var(--primary); object-fit:cover;">
+                <div class="profile-wrap">
+                    <div class="profile-card">
+                        <img id="prof-img" src="" class="rounded-circle mb-3 border border-4 border-primary shadow" width="100">
+                        <input id="p-name" class="input-3d" placeholder="Your Name">
+                        <input id="p-phone" class="input-3d" type="tel" placeholder="Phone Number">
+                        <input id="p-state" class="input-3d" placeholder="State (e.g. Rajasthan)">
                         
-                        <div class="input-group-3d"><input id="prof-name" type="text" placeholder="Full Name"></div>
-                        <div class="input-group-3d"><input id="prof-phone" type="number" placeholder="Mobile Number"></div>
-                        <div class="input-group-3d"><input id="prof-state" type="text" placeholder="Your State (e.g. Rajasthan)"></div>
-                        
-                        <button onclick="updateProfile()" class="btn btn-primary w-100 rounded-pill py-3 mt-2 fw-bold shadow">Save Profile Changes</button>
+                        <button onclick="saveProfile()" class="btn-3d mt-2">Save Profile</button>
 
-                        <div class="mt-5 text-start">
-                            <button onclick="showInfoPage('about')" class="btn-3d-tile"><i class="fa fa-university"></i> About Manoj Nehra</button>
-                            <button onclick="showInfoPage('contact')" class="btn-3d-tile"><i class="fa fa-envelope"></i> Help & Support</button>
-                            <button onclick="showInfoPage('privacy')" class="btn-3d-tile"><i class="fa fa-shield-halved"></i> Privacy & Policy</button>
+                        <div class="mt-4 text-start">
+                            <div class="menu-btn" onclick="openPageOverlay('about')"><i class="fas fa-info-circle me-3"></i> About App</div>
+                            <div class="menu-btn" onclick="openPageOverlay('contact')"><i class="fas fa-headset me-3"></i> Help & Support</div>
+                            <div class="menu-btn" onclick="openPageOverlay('privacy')"><i class="fas fa-shield-alt me-3"></i> Privacy Policy</div>
                         </div>
 
-                        <button onclick="logout()" class="btn btn-danger w-100 py-3 mt-4 rounded-pill fw-bold">Logout Securely</button>
+                        <button onclick="logout()" class="btn btn-outline-danger w-100 rounded-pill mt-4 fw-bold">Log Out</button>
                     </div>
                 </div>
             </div>
+
         </div>
 
+        <!-- D. NAVIGATION -->
         <nav class="nav-dock">
-            <div class="nav-link-3d active" onclick="showPage('homePage', this)"><i class="fas fa-home"></i>Home</div>
-            <div class="nav-link-3d" onclick="showPage('testSeriesPage', this)"><i class="fas fa-edit"></i>Tests</div>
-            <div class="nav-link-3d" onclick="showPage('purchasePage', this)"><i class="fas fa-bookmark"></i>Library</div>
-            <div class="nav-link-3d" onclick="showPage('profilePage', this)"><i class="fas fa-user-gear"></i>Profile</div>
+            <div class="nav-item active" onclick="nav('homePage', this)"><i class="fas fa-book"></i>Notes</div>
+            <div class="nav-item" onclick="nav('testsPage', this)"><i class="fas fa-laptop-code"></i>Tests</div>
+            <div class="nav-item" onclick="nav('profilePage', this)"><i class="fas fa-user-astronaut"></i>Profile</div>
         </nav>
+
     </div>
 
-    <!-- INFO PAGES MODAL -->
-    <div id="info-page-overlay">
-        <div class="info-header d-flex justify-content-between align-items-center">
-            <h4 id="info-title" class="fw-bold mb-0 text-primary">Policy Page</h4>
-            <button onclick="closeInfoPage()" class="btn btn-outline-danger btn-sm rounded-pill px-3">Close X</button>
+    <!-- 3. OVERLAYS (Info Pages & Exam UI) -->
+    
+    <!-- Info Page Overlay -->
+    <div id="infoOverlay" class="overlay">
+        <div class="d-flex justify-content-between align-items-center mb-4 sticky-top bg-dark py-2">
+            <h4 id="infoTitle" class="fw-bold text-primary m-0">TITLE</h4>
+            <button onclick="document.getElementById('infoOverlay').style.display='none'" class="btn btn-sm btn-secondary rounded-pill px-3">Close</button>
         </div>
-        <div class="info-body" id="info-content"></div>
+        <div id="infoBody" class="text-white-50 lh-lg">Loading...</div>
     </div>
 
-    <!-- Placeholders for other overlays -->
-    <div id="testListOverlay"></div>
-    <div id="exam-overlay"></div>
-    <div id="result-overlay"></div>
+    <!-- Exam Start Overlay (Simple Placeholder) -->
+    <div id="examStartOverlay" class="overlay">
+        <div class="glass-card mt-5 text-center">
+            <i class="fas fa-clipboard-check text-warning mb-3" style="font-size:3rem;"></i>
+            <h3 class="fw-bold" id="examStartTitle">Exam Name</h3>
+            <p class="text-white-50">Duration: <span id="examStartDur"></span> Mins | Marks: <span id="examStartMarks"></span></p>
+            <div class="alert alert-info small text-start bg-transparent border-info text-info">
+                Instructions: <br>1. Do not switch tabs.<br>2. Stable internet required.
+            </div>
+            <button class="btn-3d" onclick="Swal.fire('Exam Started', 'Questions will appear here (Engine Logic)', 'success')">BEGIN TEST NOW</button>
+            <button onclick="document.getElementById('examStartOverlay').style.display='none'" class="btn btn-link text-white text-decoration-none mt-3">Cancel</button>
+        </div>
+    </div>
 
+    <!-- SCRIPTS -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
         import { getAuth, GoogleAuthProvider, signInWithPopup, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
         import { getDatabase, ref, set, get, update, onValue } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
 
-        // --- FIREBASE CONFIGURATION ---
-        // IMPORTANT: Replace this with your actual Firebase project config if the below is incorrect
+        // FIREBASE CONFIG
         const firebaseConfig = { 
             apiKey: "AIzaSyAhg7hKJ123JRAfio7fymK543XpuNonMHo", 
             databaseURL: "https://showpdf-ffa34-default-rtdb.firebaseio.com", 
             projectId: "showpdf-ffa34",
-            authDomain: "showpdf-ffa34.firebaseapp.com" // Added for better auth handling
+            authDomain: "showpdf-ffa34.firebaseapp.com"
         };
 
-        let app, auth, db, provider;
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getDatabase(app);
+        const provider = new GoogleAuthProvider();
 
-        try {
-            app = initializeApp(firebaseConfig);
-            auth = getAuth(app);
-            db = getDatabase(app);
-            provider = new GoogleAuthProvider();
-            // Force account selection to avoid stuck login loops
-            provider.setCustomParameters({
-                prompt: 'select_account'
-            });
-        } catch (e) {
-            console.error("Firebase Init Error:", e);
-        }
-
-        // --- AUTHENTICATION LOGIC (FIXED) ---
-        window.login = async () => {
-            try {
-                if (!auth) throw new Error("Firebase not initialized");
-                
-                // Using signInWithPopup (works best on desktop/modern mobile browsers)
-                const result = await signInWithPopup(auth, provider);
-                const user = result.user;
-                
-                // Optional: Save basic user data immediately
-                const userRef = ref(db, 'users/' + user.uid);
-                const snapshot = await get(userRef);
-                if (!snapshot.exists()) {
-                    await set(userRef, {
-                        email: user.email,
-                        name: user.displayName,
-                        createdAt: new Date().toISOString()
-                    });
-                }
-                
-                Swal.fire({
-                    icon: 'success',
-                    title: 'Login Successful',
-                    text: `Welcome, ${user.displayName}!`,
-                    timer: 1500,
-                    showConfirmButton: false
-                });
-
-            } catch (error) {
-                console.error("Login Error:", error);
-                
-                let errorMsg = "Login failed. Please try again.";
-                if(error.code === 'auth/popup-closed-by-user') errorMsg = "You closed the login popup.";
-                if(error.code === 'auth/unauthorized-domain') errorMsg = "Domain not authorized in Firebase Console.";
-                if(error.code === 'auth/operation-not-allowed') errorMsg = "Google Sign-In is not enabled in Firebase.";
-
-                Swal.fire({
-                    title: 'Login Error',
-                    text: errorMsg + `\n(${error.message})`,
-                    icon: 'error'
-                });
-            }
+        // 1. AUTH LOGIC
+        window.login = () => {
+            signInWithPopup(auth, provider).catch(e => Swal.fire('Error', e.message, 'error'));
         };
 
-        window.logout = () => {
-            signOut(auth).then(() => {
-                location.reload();
-            }).catch((error) => {
-                console.error("Logout Error:", error);
-            });
-        };
+        window.logout = () => signOut(auth).then(() => location.reload());
 
-        // --- AUTH STATE LISTENER ---
-        onAuthStateChanged(auth, async (user) => {
-            if (user) {
+        onAuthStateChanged(auth, (user) => {
+            if(user) {
                 document.getElementById('auth-screen').style.display = 'none';
                 document.getElementById('main-app').style.display = 'block';
-                document.getElementById('welcome-user').innerText = "Welcome, " + (user.displayName || "User");
-                document.getElementById('u-img').src = user.photoURL || "https://via.placeholder.com/110";
-
+                
+                // Set User Info
+                document.getElementById('user-name').innerText = user.displayName;
+                document.getElementById('head-img').src = user.photoURL;
+                document.getElementById('prof-img').src = user.photoURL;
+                
                 // Load Profile Data
-                try {
-                    const pSnap = await get(ref(db, `users/${user.uid}/profile`));
-                    if (pSnap.exists()) {
-                        const d = pSnap.val();
-                        document.getElementById('prof-name').value = d.name || "";
-                        document.getElementById('prof-phone').value = d.phone || "";
-                        document.getElementById('prof-state').value = d.state || "";
-                    } else {
-                        document.getElementById('prof-name').value = user.displayName || "";
+                get(ref(db, `users/${user.uid}/profile`)).then(snap => {
+                    if(snap.exists()) {
+                        const d = snap.val();
+                        document.getElementById('p-name').value = d.name || user.displayName;
+                        document.getElementById('p-phone').value = d.phone || "";
+                        document.getElementById('p-state').value = d.state || "";
                     }
-                } catch(e) { console.log("Profile fetch error", e); }
+                });
 
-                // Placeholder calls for functions not fully provided in snippet
-                if(typeof loadNotes === 'function') loadNotes();
-                if(typeof loadTestSeries === 'function') loadTestSeries();
-
+                // Start Listeners
+                loadContent();
             } else {
                 document.getElementById('auth-screen').style.display = 'flex';
-                document.getElementById('main-app').style.display = 'none';
             }
         });
 
-        // --- PROFILE UPDATE LOGIC ---
-        window.updateProfile = async () => {
+        // 2. PROFILE SAVE
+        window.saveProfile = () => {
             const user = auth.currentUser;
             if(!user) return;
-
-            const data = { 
-                name: document.getElementById('prof-name').value, 
-                phone: document.getElementById('prof-phone').value, 
-                state: document.getElementById('prof-state').value,
-                photo: user.photoURL,
-                updatedAt: new Date().toISOString()
-            };
-
-            try {
-                await update(ref(db, `users/${user.uid}/profile`), data);
-                Swal.fire('Success', 'Profile saved successfully!', 'success');
-            } catch(err) {
-                Swal.fire('Error', 'Could not save profile: ' + err.message, 'error');
-            }
+            update(ref(db, `users/${user.uid}/profile`), {
+                name: document.getElementById('p-name').value,
+                phone: document.getElementById('p-phone').value,
+                state: document.getElementById('p-state').value
+            }).then(() => Swal.fire('Saved', 'Profile Updated', 'success'));
         };
 
-        // --- NAVIGATION & UI LOGIC ---
-        window.showPage = (id, el) => {
+        // 3. CONTENT LOADING (Realtime)
+        function loadContent() {
+            // A. Notes
+            onValue(ref(db, 'notes'), (snapshot) => {
+                const box = document.getElementById('notes-container');
+                box.innerHTML = '';
+                if(!snapshot.exists()) { box.innerHTML = '<div class="text-center w-100 opacity-50">No notes yet.</div>'; return; }
+                
+                snapshot.forEach(child => {
+                    const n = child.val();
+                    box.innerHTML += `
+                        <div class="col-12 col-md-6">
+                            <div class="glass-card">
+                                <span class="price-badge">₹${n.price}</span>
+                                <h5 class="fw-bold pe-4 text-truncate">${n.title}</h5>
+                                <p class="small opacity-75 mb-3" style="min-height:40px">${n.desc || 'PDF Study Material'}</p>
+                                <button onclick="window.open('${n.link}', '_blank')" class="btn-3d">
+                                    <i class="fas fa-file-pdf me-2"></i> Open PDF
+                                </button>
+                            </div>
+                        </div>`;
+                });
+            });
+
+            // B. Tests
+            onValue(ref(db, 'testSeries'), (snapshot) => {
+                const box = document.getElementById('tests-container');
+                box.innerHTML = '';
+                if(!snapshot.exists()) { box.innerHTML = '<div class="text-center w-100 opacity-50">No tests yet.</div>'; return; }
+                
+                snapshot.forEach(child => {
+                    const t = child.val();
+                    // We store the JSON questions in t.questions
+                    // For now, we just pass basic info to the Start function
+                    box.innerHTML += `
+                        <div class="col-12 col-md-6">
+                            <div class="glass-card" style="border-left: 4px solid var(--accent)">
+                                <span class="price-badge" style="background:var(--accent)">₹${t.price}</span>
+                                <h5 class="fw-bold pe-4">${t.title}</h5>
+                                <div class="d-flex gap-3 small opacity-75 mb-3">
+                                    <span><i class="far fa-clock"></i> ${t.duration}m</span>
+                                    <span><i class="fas fa-star"></i> ${t.totalMarks} Marks</span>
+                                </div>
+                                <button onclick="openExamModal('${t.title}', '${t.duration}', '${t.totalMarks}')" class="btn-3d" style="filter: hue-rotate(45deg);">
+                                    <i class="fas fa-play me-2"></i> Attempt Test
+                                </button>
+                            </div>
+                        </div>`;
+                });
+            });
+        }
+
+        // 4. UI FUNCTIONS
+        window.nav = (pageId, el) => {
             document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-            document.getElementById(id).classList.add('active');
-            
-            document.querySelectorAll('.nav-link-3d').forEach(n => n.classList.remove('active'));
-            if(el) el.classList.add('active');
+            document.getElementById(pageId).classList.add('active');
+            document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
+            el.classList.add('active');
         };
 
-        // --- CONTENT DATA (Static for Info Pages) ---
-        const pageData = {
-            about: `<h2>About Manoj Nehra Official Hub</h2>
-                    <p>Manoj Nehra Official Hub is Rajasthan's fastest-growing digital learning platform...</p>`,
+        window.openPageOverlay = (type) => {
+            document.getElementById('infoOverlay').style.display = 'block';
+            document.getElementById('infoTitle').innerText = type.toUpperCase();
+            document.getElementById('infoBody').innerHTML = '<div class="text-center mt-5"><i class="fas fa-spinner fa-spin"></i></div>';
             
-            privacy: `<h2>Privacy Policy</h2><p>Secure authentication via Google Firebase...</p>`,
-            
-            contact: `<h2>Contact Us</h2><p>Email: support@manojnehra.com</p>`
+            get(ref(db, `pages/${type}`)).then(snap => {
+                document.getElementById('infoBody').innerHTML = snap.val() || "No content available.";
+            });
         };
 
-        window.showInfoPage = (type) => {
-            document.getElementById('info-page-overlay').style.display = 'flex';
-            document.getElementById('info-title').innerText = type.toUpperCase();
-            document.getElementById('info-content').innerHTML = pageData[type] || "Content loading...";
-        };
-        window.closeInfoPage = () => document.getElementById('info-page-overlay').style.display = 'none';
+        window.openExamModal = (title, dur, marks) => {
+            document.getElementById('examStartOverlay').style.display = 'block';
+            document.getElementById('examStartTitle').innerText = title;
+            document.getElementById('examStartDur').innerText = dur;
+            document.getElementById('examStartMarks').innerText = marks;
+        }
 
     </script>
 </body>
