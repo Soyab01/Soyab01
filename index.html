@@ -5,347 +5,575 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Manoj Nehra | Learning Hub</title>
     
-    <!-- Assets -->
+    <!-- CSS & Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;800&display=swap" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script> <!-- For Results Graph -->
     
     <style>
         :root { 
-            --primary: #6366f1; 
-            --accent: #a855f7;
-            --dark: #0f172a;
+            --primary: #6366f1; --accent: #a855f7; --dark: #0f172a;
             --glass: rgba(255, 255, 255, 0.05); 
             --bg-gradient: linear-gradient(135deg, #020617 0%, #1e1b4b 100%);
         }
-
-        body { 
-            background: var(--bg-gradient); color: #f8fafc; 
-            font-family: 'Poppins', sans-serif; min-height: 100vh; 
-            padding-bottom: 100px; -webkit-tap-highlight-color: transparent;
-        }
-
-        /* --- Glassmorphism Cards --- */
+        body { background: var(--bg-gradient); color: #f8fafc; font-family: 'Poppins', sans-serif; min-height: 100vh; padding-bottom: 80px; user-select: none; }
+        
+        /* Glass Components */
         .glass-card { 
-            background: var(--glass); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
-            border: 1px solid rgba(255,255,255,0.1); border-radius: 24px; 
-            padding: 20px; position: relative; overflow: hidden;
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            background: var(--glass); backdrop-filter: blur(16px);
+            border: 1px solid rgba(255,255,255,0.1); border-radius: 20px; 
+            padding: 15px; position: relative; transition: 0.3s; margin-bottom: 15px;
         }
         .glass-card:active { transform: scale(0.98); }
-        .glass-card:hover { transform: translateY(-5px); box-shadow: 0 10px 30px rgba(99, 102, 241, 0.2); }
+        .thumb-img { width: 100%; height: 140px; object-fit: cover; border-radius: 15px; margin-bottom: 10px; }
 
-        .price-badge { 
-            position: absolute; top: 15px; right: 15px; 
-            background: rgba(99, 102, 241, 0.9); color: white; 
-            padding: 4px 12px; border-radius: 12px; font-weight: 700; font-size: 0.85rem;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
-        }
-
-        /* --- 3D Buttons & Inputs --- */
+        /* Profile & Buttons */
         .btn-3d {
-            background: linear-gradient(145deg, #6366f1, #4f46e5);
-            border: none; color: white; width: 100%; padding: 12px;
-            border-radius: 16px; font-weight: 700; box-shadow: 0 4px 0 #3730a3;
-            transition: all 0.1s;
+            background: linear-gradient(145deg, #6366f1, #4f46e5); color: white;
+            border: none; width: 100%; padding: 12px; border-radius: 12px;
+            font-weight: 700; box-shadow: 0 4px 0 #3730a3; margin-bottom: 15px;
         }
-        .btn-3d:active { transform: translateY(4px); box-shadow: 0 0 0 #3730a3; }
-
+        .btn-3d:active { transform: translateY(4px); box-shadow: none; }
+        .btn-secondary-3d { background: rgba(255,255,255,0.1); box-shadow: 0 4px 0 rgba(255,255,255,0.05); }
+        
         .input-3d {
             background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.1);
-            border-radius: 16px; padding: 12px; color: white; width: 100%;
-            text-align: center; font-weight: 600; outline: none; margin-bottom: 10px;
-            box-shadow: inset 0 2px 5px rgba(0,0,0,0.5);
+            border-radius: 12px; padding: 12px; color: white; width: 100%;
+            text-align: center; font-weight: 600; margin-bottom: 12px;
         }
-        .input-3d:focus { border-color: var(--primary); }
+        .input-3d:disabled { opacity: 0.6; cursor: not-allowed; border-color: transparent; }
 
-        /* --- Profile 3D --- */
-        .profile-wrap { perspective: 1000px; padding: 20px; }
-        .profile-card {
-            background: rgba(255,255,255,0.03); border-radius: 30px; padding: 30px 20px;
-            border: 1px solid rgba(255,255,255,0.1); text-align: center;
-            box-shadow: 0 20px 50px rgba(0,0,0,0.5);
-        }
-        .menu-btn {
-            background: rgba(255,255,255,0.05); padding: 15px; border-radius: 15px;
-            margin-bottom: 10px; display: flex; align-items: center; cursor: pointer;
-            border: 1px solid rgba(255,255,255,0.05); transition: 0.2s;
-        }
-        .menu-btn:active { background: rgba(255,255,255,0.1); }
-        .menu-btn i { width: 30px; color: var(--accent); font-size: 1.2rem; }
+        /* Exam UI */
+        .q-palette { display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; max-height: 200px; overflow-y: auto; }
+        .q-btn { width: 40px; height: 40px; border-radius: 50%; border: 1px solid #666; display: flex; align-items: center; justify-content: center; font-size: 0.8rem; cursor: pointer; }
+        .q-btn.answered { background: #22c55e; border-color: #22c55e; color: white; }
+        .q-btn.visited { background: #eab308; border-color: #eab308; color: black; }
+        .q-btn.active { border: 2px solid white; box-shadow: 0 0 10px white; }
 
-        /* --- Navigation Dock --- */
+        /* Result Table */
+        .rank-table { width: 100%; font-size: 0.9rem; }
+        .rank-table tr { border-bottom: 1px solid rgba(255,255,255,0.1); }
+        .rank-table td { padding: 10px; }
+        .rank-1 { color: #ffd700; font-weight: bold; }
+
+        /* Navigation */
         .nav-dock { 
-            position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); 
+            position: fixed; bottom: 15px; left: 50%; transform: translateX(-50%); 
             width: 90%; max-width: 400px; background: rgba(15, 23, 42, 0.95); 
             border-radius: 25px; display: flex; justify-content: space-around; 
-            padding: 12px; z-index: 1000; border: 1px solid rgba(255,255,255,0.15);
-            box-shadow: 0 10px 40px rgba(0,0,0,0.5); backdrop-filter: blur(10px);
+            padding: 10px; z-index: 1000; border: 1px solid rgba(255,255,255,0.15);
         }
-        .nav-item { 
-            text-align: center; color: rgba(255,255,255,0.5); font-size: 0.7rem; 
-            cursor: pointer; transition: 0.3s; flex: 1;
-        }
-        .nav-item i { font-size: 1.4rem; display: block; margin-bottom: 2px; }
+        .nav-item { text-align: center; color: rgba(255,255,255,0.5); flex: 1; font-size: 0.75rem; transition: 0.3s; }
         .nav-item.active { color: var(--primary); transform: translateY(-5px); }
+        .nav-item i { font-size: 1.4rem; display: block; margin-bottom: 2px; }
 
-        /* --- Overlays & Modals --- */
-        .overlay { display: none; position: fixed; inset: 0; background: #020617; z-index: 2000; overflow-y: auto; padding: 20px; animation: fadeInUp 0.3s; }
+        /* Overlays */
+        .overlay-fs { position: fixed; inset: 0; background: #0f172a; z-index: 5000; overflow-y: auto; display: none; padding-bottom: 50px; }
         .page { display: none; animation: fadeIn 0.4s; }
         .page.active { display: block; }
-
-        /* Login Screen */
-        #auth-screen { position: fixed; inset: 0; z-index: 5000; background: #020617; display: flex; align-items: center; justify-content: center; }
     </style>
 </head>
 <body oncontextmenu="return false;">
 
-    <!-- 1. LOGIN SCREEN -->
-    <div id="auth-screen">
-        <div class="glass-card text-center" style="width: 85%; max-width: 350px;">
-            <img src="./manoj.jpg.jpg" class="rounded-circle border border-3 border-primary shadow mb-3" width="90" height="90" onerror="this.src='https://via.placeholder.com/90'">
-            <h3 class="fw-bold mb-1">Manoj Nehra</h3>
-            <p class="small text-muted mb-4">Official Preparation App</p>
-            <button onclick="login()" class="btn btn-light w-100 rounded-pill py-2 fw-bold mb-3">
-                <i class="fab fa-google me-2"></i> Sign In
-            </button>
-            <div class="small text-white-50" onclick="openPageOverlay('privacy')">Read <u class="text-primary">Privacy Policy</u></div>
+    <!-- LOGIN -->
+    <div id="auth-screen" style="position:fixed; inset:0; z-index:9000; background:#020617; display:flex; align-items:center; justify-content:center;">
+        <div class="glass-card text-center" style="width:300px;">
+            <img src="./manoj.jpg.jpg" class="rounded-circle border border-3 border-primary shadow mb-3" width="90" onerror="this.src='https://via.placeholder.com/90'">
+            <h4 class="fw-bold">Manoj Nehra Hub</h4>
+            <button onclick="login()" class="btn btn-light w-100 rounded-pill py-2 fw-bold mt-3"><i class="fab fa-google"></i> Sign In</button>
         </div>
     </div>
 
-    <!-- 2. MAIN APPLICATION -->
+    <!-- MAIN APP -->
     <div id="main-app" style="display:none;">
-        
-        <!-- Header -->
-        <div class="container pt-3 pb-2 sticky-top" style="background: rgba(2,6,23,0.95); z-index: 900;">
-            <div class="d-flex align-items-center">
-                <img id="head-img" src="" class="rounded-circle border border-secondary" width="45" height="45">
-                <div class="ms-3">
-                    <h6 class="mb-0 fw-bold" id="user-name">Loading...</h6>
-                    <small class="text-success fw-bold">Online Student</small>
+        <header class="container pt-3 pb-2 sticky-top" style="background: rgba(2,6,23,0.95); z-index: 900;">
+            <div class="d-flex justify-content-between align-items-center">
+                <div class="d-flex align-items-center">
+                    <img id="head-img" src="" class="rounded-circle border border-secondary" width="40">
+                    <div class="ms-3">
+                        <h6 class="mb-0 fw-bold text-white" id="user-name">Student</h6>
+                        <small class="text-success" style="font-size:0.7rem">● Online</small>
+                    </div>
+                </div>
+                <!-- Marks Hider for Test -->
+                <div id="exam-top-bar" class="d-none text-end">
+                    <span id="timer-display" class="badge bg-danger fs-6">00:00</span>
                 </div>
             </div>
-        </div>
+        </header>
 
         <div class="container mt-2">
             
-            <!-- A. HOME (NOTES) -->
+            <!-- 1. HOME (NOTES) -->
             <div id="homePage" class="page active">
-                <h5 class="fw-bold mb-3 ps-1 border-start border-4 border-primary ps-2">Latest PDF Notes</h5>
-                <div id="notes-container" class="row g-3 pb-5">
-                    <!-- Notes loaded from Firebase -->
-                    <div class="text-center text-muted mt-5"><i class="fas fa-spinner fa-spin"></i> Syncing...</div>
-                </div>
+                <h5 class="fw-bold mb-3 ps-2 border-start border-4 border-primary">Study Material</h5>
+                <div id="notes-container" class="row g-3"></div>
             </div>
 
-            <!-- B. TESTS -->
+            <!-- 2. TEST SERIES LIST -->
             <div id="testsPage" class="page">
-                <h5 class="fw-bold mb-3 ps-1 border-start border-4 border-info ps-2">Online Test Series</h5>
-                <div id="tests-container" class="row g-3 pb-5">
-                    <!-- Tests loaded from Firebase -->
-                </div>
+                <h5 class="fw-bold mb-3 ps-2 border-start border-4 border-info">Test Series</h5>
+                <div id="series-container" class="row g-3"></div>
             </div>
 
-            <!-- C. PROFILE -->
+            <!-- 3. PROFILE -->
             <div id="profilePage" class="page">
-                <div class="profile-wrap">
-                    <div class="profile-card">
-                        <img id="prof-img" src="" class="rounded-circle mb-3 border border-4 border-primary shadow" width="100">
-                        <input id="p-name" class="input-3d" placeholder="Your Name">
-                        <input id="p-phone" class="input-3d" type="tel" placeholder="Phone Number">
-                        <input id="p-state" class="input-3d" placeholder="State (e.g. Rajasthan)">
-                        
-                        <button onclick="saveProfile()" class="btn-3d mt-2">Save Profile</button>
+                <div class="glass-card text-center mt-4">
+                    <img id="prof-img" src="" class="rounded-circle mb-3 border border-4 border-primary shadow" width="100">
+                    
+                    <input id="p-name" class="input-3d" placeholder="Full Name" disabled>
+                    <input id="p-phone" class="input-3d" type="tel" placeholder="Mobile Number" disabled>
+                    <input id="p-state" class="input-3d" placeholder="State (e.g. Rajasthan)" disabled>
+                    
+                    <button id="btn-edit-prof" onclick="toggleEditProfile()" class="btn-3d bg-primary">Edit Profile</button>
 
-                        <div class="mt-4 text-start">
-                            <div class="menu-btn" onclick="openPageOverlay('about')"><i class="fas fa-info-circle me-3"></i> About App</div>
-                            <div class="menu-btn" onclick="openPageOverlay('contact')"><i class="fas fa-headset me-3"></i> Help & Support</div>
-                            <div class="menu-btn" onclick="openPageOverlay('privacy')"><i class="fas fa-shield-alt me-3"></i> Privacy Policy</div>
-                        </div>
-
-                        <button onclick="logout()" class="btn btn-outline-danger w-100 rounded-pill mt-4 fw-bold">Log Out</button>
+                    <div class="mt-4 text-start">
+                        <button onclick="openPage('about')" class="btn-3d btn-secondary-3d text-start"><i class="fas fa-university me-3"></i>About Us</button>
+                        <button onclick="openPage('privacy')" class="btn-3d btn-secondary-3d text-start"><i class="fas fa-shield-alt me-3"></i>Privacy Policy</button>
+                        <button onclick="logout()" class="btn btn-danger w-100 rounded-pill py-2 mt-2">Logout</button>
                     </div>
                 </div>
             </div>
-
         </div>
 
-        <!-- D. NAVIGATION -->
+        <!-- BOTTOM NAV -->
         <nav class="nav-dock">
-            <div class="nav-item active" onclick="nav('homePage', this)"><i class="fas fa-book"></i>Notes</div>
+            <div class="nav-item active" onclick="nav('homePage', this)"><i class="fas fa-book-reader"></i>Notes</div>
             <div class="nav-item" onclick="nav('testsPage', this)"><i class="fas fa-laptop-code"></i>Tests</div>
-            <div class="nav-item" onclick="nav('profilePage', this)"><i class="fas fa-user-astronaut"></i>Profile</div>
+            <div class="nav-item" onclick="nav('profilePage', this)"><i class="fas fa-user-circle"></i>Profile</div>
         </nav>
-
     </div>
 
-    <!-- 3. OVERLAYS (Info Pages & Exam UI) -->
-    
-    <!-- Info Page Overlay -->
-    <div id="infoOverlay" class="overlay">
-        <div class="d-flex justify-content-between align-items-center mb-4 sticky-top bg-dark py-2">
-            <h4 id="infoTitle" class="fw-bold text-primary m-0">TITLE</h4>
-            <button onclick="document.getElementById('infoOverlay').style.display='none'" class="btn btn-sm btn-secondary rounded-pill px-3">Close</button>
+    <!-- SUB-TESTS LIST OVERLAY (Level 2) -->
+    <div id="subTestsOverlay" class="overlay-fs p-3">
+        <div class="d-flex justify-content-between align-items-center mb-4 sticky-top bg-dark pt-2 pb-2">
+            <h5 class="fw-bold m-0" id="seriesTitleDisplay">Series Name</h5>
+            <button onclick="closeOverlay('subTestsOverlay')" class="btn btn-sm btn-outline-light rounded-pill">Close</button>
         </div>
-        <div id="infoBody" class="text-white-50 lh-lg">Loading...</div>
+        <div id="paper-list-container"></div>
     </div>
 
-    <!-- Exam Start Overlay (Simple Placeholder) -->
-    <div id="examStartOverlay" class="overlay">
-        <div class="glass-card mt-5 text-center">
-            <i class="fas fa-clipboard-check text-warning mb-3" style="font-size:3rem;"></i>
-            <h3 class="fw-bold" id="examStartTitle">Exam Name</h3>
-            <p class="text-white-50">Duration: <span id="examStartDur"></span> Mins | Marks: <span id="examStartMarks"></span></p>
-            <div class="alert alert-info small text-start bg-transparent border-info text-info">
-                Instructions: <br>1. Do not switch tabs.<br>2. Stable internet required.
+    <!-- EXAM INTERFACE OVERLAY (Govt Style) -->
+    <div id="examOverlay" class="overlay-fs" style="background: white; color: black;">
+        <div class="d-flex justify-content-between align-items-center bg-primary text-white p-2 sticky-top">
+            <span class="fw-bold" id="exam-timer">00:00:00</span>
+            <button onclick="submitTest()" class="btn btn-sm btn-danger fw-bold">SUBMIT</button>
+        </div>
+        <div class="container mt-3 pb-5">
+            <div class="d-flex justify-content-between mb-2">
+                <span class="badge bg-secondary">Q. <span id="q-curr">1</span>/<span id="q-total">100</span></span>
+                <span class="badge bg-success">+<span id="marks-pos">2</span></span>
+                <span class="badge bg-danger">-<span id="marks-neg">0.33</span></span>
             </div>
-            <button class="btn-3d" onclick="Swal.fire('Exam Started', 'Questions will appear here (Engine Logic)', 'success')">BEGIN TEST NOW</button>
-            <button onclick="document.getElementById('examStartOverlay').style.display='none'" class="btn btn-link text-white text-decoration-none mt-3">Cancel</button>
+            
+            <div class="card shadow-sm mb-3 border-0 bg-light">
+                <div class="card-body">
+                    <p class="fw-bold fs-5" id="q-text">Question loading...</p>
+                </div>
+            </div>
+
+            <div id="options-container" class="d-grid gap-2 mb-4">
+                <!-- Options injected by JS -->
+            </div>
+
+            <div class="fixed-bottom bg-white border-top p-2 d-flex justify-content-between shadow-lg">
+                <button onclick="prevQ()" class="btn btn-outline-secondary px-4">Prev</button>
+                <button onclick="togglePalette()" class="btn btn-outline-primary"><i class="fas fa-th"></i></button>
+                <button onclick="saveAndNext()" class="btn btn-success px-4">Save & Next</button>
+            </div>
+        </div>
+        
+        <!-- Question Palette Modal -->
+        <div id="paletteModal" class="p-3 bg-white border-top shadow" style="display:none; position:fixed; bottom:60px; left:0; right:0; max-height:40vh; overflow-y:auto;">
+            <h6 class="text-center fw-bold">Question Palette</h6>
+            <div class="q-palette" id="palette-grid"></div>
         </div>
     </div>
 
-    <!-- SCRIPTS -->
+    <!-- RESULT SCREEN OVERLAY -->
+    <div id="resultOverlay" class="overlay-fs p-3 text-center">
+        <h3 class="fw-bold text-warning mt-4">RESULT CARD</h3>
+        <div class="glass-card mt-3">
+            <div class="row">
+                <div class="col-4 border-end border-secondary">
+                    <h2 class="fw-bold text-white" id="res-score">0</h2>
+                    <small class="text-white-50">Score</small>
+                </div>
+                <div class="col-4 border-end border-secondary">
+                    <h2 class="fw-bold text-info" id="res-rank">#0</h2>
+                    <small class="text-white-50">Rank</small>
+                </div>
+                <div class="col-4">
+                    <h2 class="fw-bold text-success" id="res-percent">0%</h2>
+                    <small class="text-white-50">Percentile</small>
+                </div>
+            </div>
+            <hr class="border-secondary">
+            <div class="d-flex justify-content-around small">
+                <span class="text-success"><i class="fas fa-check-circle"></i> <span id="res-correct">0</span> Correct</span>
+                <span class="text-danger"><i class="fas fa-times-circle"></i> <span id="res-wrong">0</span> Wrong</span>
+                <span class="text-secondary"><i class="fas fa-minus-circle"></i> <span id="res-skip">0</span> Skipped</span>
+            </div>
+        </div>
+
+        <h5 class="mt-4 text-start fw-bold text-primary">🏆 Top 15 Leaderboard</h5>
+        <div class="glass-card p-0 overflow-hidden">
+            <table class="rank-table text-start">
+                <tbody id="leaderboard-body"></tbody>
+            </table>
+        </div>
+        <button onclick="closeOverlay('resultOverlay')" class="btn btn-light w-100 rounded-pill mt-3 fw-bold">Back to Home</button>
+    </div>
+
+    <!-- INFO PAGE OVERLAY -->
+    <div id="infoOverlay" class="overlay-fs p-4">
+        <h3 id="infoTitle" class="fw-bold text-primary">Page</h3>
+        <div id="infoContent" class="mt-3 lh-lg text-white-50"></div>
+        <button onclick="closeOverlay('infoOverlay')" class="btn btn-secondary mt-5">Close</button>
+    </div>
+
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
         import { getAuth, GoogleAuthProvider, signInWithPopup, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-        import { getDatabase, ref, set, get, update, onValue } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
+        import { getDatabase, ref, update, get, onValue, set } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
 
         // FIREBASE CONFIG
         const firebaseConfig = { 
             apiKey: "AIzaSyAhg7hKJ123JRAfio7fymK543XpuNonMHo", 
             databaseURL: "https://showpdf-ffa34-default-rtdb.firebaseio.com", 
-            projectId: "showpdf-ffa34",
-            authDomain: "showpdf-ffa34.firebaseapp.com"
+            projectId: "showpdf-ffa34"
         };
-
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
         const db = getDatabase(app);
         const provider = new GoogleAuthProvider();
 
-        // 1. AUTH LOGIC
-        window.login = () => {
-            signInWithPopup(auth, provider).catch(e => Swal.fire('Error', e.message, 'error'));
-        };
+        let currentUser = null;
+        let currentSeries = null;
+        let currentPaper = null;
+        let currentPaperIndex = 0;
+        let userAnswers = {};
+        let timerInterval;
+        let timeLeft = 0;
 
+        // AUTH
+        window.login = () => signInWithPopup(auth, provider);
         window.logout = () => signOut(auth).then(() => location.reload());
 
         onAuthStateChanged(auth, (user) => {
             if(user) {
+                currentUser = user;
                 document.getElementById('auth-screen').style.display = 'none';
                 document.getElementById('main-app').style.display = 'block';
-                
-                // Set User Info
                 document.getElementById('user-name').innerText = user.displayName;
                 document.getElementById('head-img').src = user.photoURL;
                 document.getElementById('prof-img').src = user.photoURL;
-                
-                // Load Profile Data
-                get(ref(db, `users/${user.uid}/profile`)).then(snap => {
-                    if(snap.exists()) {
-                        const d = snap.val();
-                        document.getElementById('p-name').value = d.name || user.displayName;
-                        document.getElementById('p-phone').value = d.phone || "";
-                        document.getElementById('p-state').value = d.state || "";
-                    }
-                });
-
-                // Start Listeners
+                loadProfile();
                 loadContent();
             } else {
                 document.getElementById('auth-screen').style.display = 'flex';
             }
         });
 
-        // 2. PROFILE SAVE
-        window.saveProfile = () => {
-            const user = auth.currentUser;
-            if(!user) return;
-            update(ref(db, `users/${user.uid}/profile`), {
-                name: document.getElementById('p-name').value,
-                phone: document.getElementById('p-phone').value,
-                state: document.getElementById('p-state').value
-            }).then(() => Swal.fire('Saved', 'Profile Updated', 'success'));
+        // 1. PROFILE LOGIC
+        async function loadProfile() {
+            const snap = await get(ref(db, `users/${currentUser.uid}/profile`));
+            if(snap.exists()) {
+                const d = snap.val();
+                document.getElementById('p-name').value = d.name || currentUser.displayName;
+                document.getElementById('p-phone').value = d.phone || "";
+                document.getElementById('p-state').value = d.state || "";
+            } else {
+                document.getElementById('p-name').value = currentUser.displayName;
+            }
+        }
+
+        window.toggleEditProfile = () => {
+            const btn = document.getElementById('btn-edit-prof');
+            const inputs = document.querySelectorAll('.input-3d');
+            const isEditing = btn.innerText === "Save Profile";
+
+            if(isEditing) {
+                // Save Logic
+                update(ref(db, `users/${currentUser.uid}/profile`), {
+                    name: document.getElementById('p-name').value,
+                    phone: document.getElementById('p-phone').value,
+                    state: document.getElementById('p-state').value
+                }).then(() => Swal.fire('Saved', 'Profile Updated', 'success'));
+                
+                inputs.forEach(i => i.disabled = true);
+                btn.innerText = "Edit Profile";
+                btn.classList.remove('btn-success');
+                btn.classList.add('bg-primary');
+            } else {
+                // Edit Logic
+                inputs.forEach(i => i.disabled = false);
+                btn.innerText = "Save Profile";
+                btn.classList.remove('bg-primary');
+                btn.classList.add('btn-success');
+            }
         };
 
-        // 3. CONTENT LOADING (Realtime)
+        // 2. LOAD NOTES & TEST SERIES
         function loadContent() {
-            // A. Notes
-            onValue(ref(db, 'notes'), (snapshot) => {
+            // Notes
+            onValue(ref(db, 'notes'), snap => {
                 const box = document.getElementById('notes-container');
                 box.innerHTML = '';
-                if(!snapshot.exists()) { box.innerHTML = '<div class="text-center w-100 opacity-50">No notes yet.</div>'; return; }
-                
-                snapshot.forEach(child => {
-                    const n = child.val();
+                snap.forEach(c => {
+                    const n = c.val();
                     box.innerHTML += `
-                        <div class="col-12 col-md-6">
-                            <div class="glass-card">
-                                <span class="price-badge">₹${n.price}</span>
-                                <h5 class="fw-bold pe-4 text-truncate">${n.title}</h5>
-                                <p class="small opacity-75 mb-3" style="min-height:40px">${n.desc || 'PDF Study Material'}</p>
-                                <button onclick="window.open('${n.link}', '_blank')" class="btn-3d">
-                                    <i class="fas fa-file-pdf me-2"></i> Open PDF
-                                </button>
+                        <div class="col-6 col-md-4">
+                            <div class="glass-card p-2" onclick="window.open('${n.link}')">
+                                <img src="${n.thumb || 'https://via.placeholder.com/150'}" class="thumb-img">
+                                <h6 class="fw-bold small mb-1 text-truncate">${n.title}</h6>
+                                <span class="badge bg-primary">₹${n.price}</span>
                             </div>
                         </div>`;
                 });
             });
 
-            // B. Tests
-            onValue(ref(db, 'testSeries'), (snapshot) => {
-                const box = document.getElementById('tests-container');
+            // Series
+            onValue(ref(db, 'testSeries'), snap => {
+                const box = document.getElementById('series-container');
                 box.innerHTML = '';
-                if(!snapshot.exists()) { box.innerHTML = '<div class="text-center w-100 opacity-50">No tests yet.</div>'; return; }
-                
-                snapshot.forEach(child => {
-                    const t = child.val();
-                    // We store the JSON questions in t.questions
-                    // For now, we just pass basic info to the Start function
+                snap.forEach(c => {
+                    const s = c.val();
+                    const sKey = c.key;
                     box.innerHTML += `
-                        <div class="col-12 col-md-6">
-                            <div class="glass-card" style="border-left: 4px solid var(--accent)">
-                                <span class="price-badge" style="background:var(--accent)">₹${t.price}</span>
-                                <h5 class="fw-bold pe-4">${t.title}</h5>
-                                <div class="d-flex gap-3 small opacity-75 mb-3">
-                                    <span><i class="far fa-clock"></i> ${t.duration}m</span>
-                                    <span><i class="fas fa-star"></i> ${t.totalMarks} Marks</span>
+                        <div class="col-12">
+                            <div class="glass-card d-flex align-items-center" onclick="openSeries('${sKey}')">
+                                <img src="${s.thumb || 'https://via.placeholder.com/80'}" style="width:80px; height:80px; border-radius:10px; object-fit:cover" class="me-3">
+                                <div>
+                                    <span class="badge bg-warning text-dark mb-1">${s.category || 'Exam'}</span>
+                                    <h5 class="fw-bold mb-1">${s.title}</h5>
+                                    <small class="text-white-50">${s.papers ? s.papers.length : 0} Tests Inside</small>
                                 </div>
-                                <button onclick="openExamModal('${t.title}', '${t.duration}', '${t.totalMarks}')" class="btn-3d" style="filter: hue-rotate(45deg);">
-                                    <i class="fas fa-play me-2"></i> Attempt Test
-                                </button>
+                                <i class="fas fa-chevron-right ms-auto opacity-50"></i>
                             </div>
                         </div>`;
                 });
             });
         }
 
-        // 4. UI FUNCTIONS
-        window.nav = (pageId, el) => {
+        // 3. SERIES & SUB-TEST LOGIC
+        window.openSeries = async (key) => {
+            const snap = await get(ref(db, `testSeries/${key}`));
+            currentSeries = { ...snap.val(), id: key };
+            
+            document.getElementById('subTestsOverlay').style.display = 'block';
+            document.getElementById('seriesTitleDisplay').innerText = currentSeries.title;
+            const list = document.getElementById('paper-list-container');
+            list.innerHTML = '<div class="text-center mt-5"><i class="fas fa-spinner fa-spin"></i> Checking Progress...</div>';
+
+            // Get User Results to check locks
+            const resSnap = await get(ref(db, `users/${currentUser.uid}/results/${key}`));
+            const results = resSnap.val() || {};
+
+            list.innerHTML = '';
+            if(!currentSeries.papers) return;
+
+            currentSeries.papers.forEach((paper, idx) => {
+                const isLocked = idx > 0 && !results[idx-1]; // Lock if previous not done
+                const hasResult = results[idx];
+                
+                let btnHtml = '';
+                if(isLocked) {
+                    btnHtml = `<button class="btn btn-sm btn-secondary w-100" disabled><i class="fas fa-lock"></i> Locked</button>`;
+                } else if (hasResult) {
+                    btnHtml = `<button onclick="showResult('${key}', ${idx})" class="btn btn-sm btn-info w-100 fw-bold">View Result</button>`;
+                } else {
+                    btnHtml = `<button onclick="startTest(${idx})" class="btn btn-sm btn-primary w-100 fw-bold">Start Test</button>`;
+                }
+
+                list.innerHTML += `
+                    <div class="glass-card mb-2 p-3 d-flex align-items-center justify-content-between">
+                        <div>
+                            <h6 class="fw-bold mb-0">${paper.name}</h6>
+                            <small class="text-white-50">${paper.questions.length} Qs | ${paper.duration} Mins</small>
+                        </div>
+                        <div style="width:100px">${btnHtml}</div>
+                    </div>`;
+            });
+        };
+
+        // 4. EXAM ENGINE
+        window.startTest = (idx) => {
+            currentPaperIndex = idx;
+            currentPaper = currentSeries.papers[idx];
+            userAnswers = {};
+            timeLeft = currentPaper.duration * 60;
+            
+            document.getElementById('examOverlay').style.display = 'block';
+            document.getElementById('q-total').innerText = currentPaper.questions.length;
+            document.getElementById('marks-pos').innerText = currentSeries.marksPerQ;
+            document.getElementById('marks-neg').innerText = currentSeries.negMark;
+            
+            renderPalette();
+            loadQuestion(0);
+            startTimer();
+        };
+
+        let currentQIdx = 0;
+        function loadQuestion(idx) {
+            currentQIdx = idx;
+            const q = currentPaper.questions[idx];
+            document.getElementById('q-curr').innerText = idx + 1;
+            document.getElementById('q-text').innerText = q.q;
+            
+            const optsDiv = document.getElementById('options-container');
+            optsDiv.innerHTML = '';
+            ['a','b','c','d'].forEach(opt => {
+                const isSel = userAnswers[idx] === opt ? 'bg-primary text-white' : 'btn-outline-dark';
+                optsDiv.innerHTML += `<button onclick="selectOpt('${opt}', this)" class="btn ${isSel} text-start py-3 fw-bold border shadow-sm">${opt.toUpperCase()}) ${q[opt]}</button>`;
+            });
+            updatePaletteUI();
+        }
+
+        window.selectOpt = (opt, btn) => {
+            userAnswers[currentQIdx] = opt;
+            // Visual Update
+            const btns = document.getElementById('options-container').children;
+            for(let b of btns) { b.classList.remove('bg-primary','text-white'); b.classList.add('btn-outline-dark'); }
+            btn.classList.remove('btn-outline-dark');
+            btn.classList.add('bg-primary', 'text-white');
+        };
+
+        window.saveAndNext = () => {
+            if(currentQIdx < currentPaper.questions.length - 1) loadQuestion(currentQIdx + 1);
+        };
+        window.prevQ = () => {
+            if(currentQIdx > 0) loadQuestion(currentQIdx - 1);
+        };
+        
+        function renderPalette() {
+            const pal = document.getElementById('palette-grid');
+            pal.innerHTML = '';
+            currentPaper.questions.forEach((_, i) => {
+                pal.innerHTML += `<div class="q-btn" id="pal-${i}" onclick="loadQuestion(${i});togglePalette()">${i+1}</div>`;
+            });
+        }
+        function updatePaletteUI() {
+            for(let i=0; i<currentPaper.questions.length; i++) {
+                const el = document.getElementById(`pal-${i}`);
+                if(i === currentQIdx) el.classList.add('active'); else el.classList.remove('active');
+                if(userAnswers[i]) el.classList.add('answered');
+            }
+        }
+        window.togglePalette = () => {
+            const p = document.getElementById('paletteModal');
+            p.style.display = p.style.display === 'none' ? 'block' : 'none';
+        };
+
+        function startTimer() {
+            clearInterval(timerInterval);
+            timerInterval = setInterval(() => {
+                timeLeft--;
+                const m = Math.floor(timeLeft / 60);
+                const s = timeLeft % 60;
+                document.getElementById('exam-timer').innerText = `${m}:${s < 10 ? '0'+s : s}`;
+                if(timeLeft <= 0) submitTest();
+            }, 1000);
+        }
+
+        // 5. SUBMIT & RESULT
+        window.submitTest = async () => {
+            clearInterval(timerInterval);
+            document.getElementById('examOverlay').style.display = 'none';
+            
+            // Calculate Score
+            let score = 0, correct = 0, wrong = 0;
+            currentPaper.questions.forEach((q, i) => {
+                if(userAnswers[i]) {
+                    if(userAnswers[i] === q.ans) {
+                        score += parseFloat(currentSeries.marksPerQ);
+                        correct++;
+                    } else {
+                        score -= parseFloat(currentSeries.negMark);
+                        wrong++;
+                    }
+                }
+            });
+
+            // Save Result
+            const resultData = {
+                score: score.toFixed(2),
+                correct, wrong,
+                skipped: currentPaper.questions.length - (correct + wrong),
+                totalMarks: currentPaper.questions.length * currentSeries.marksPerQ,
+                timestamp: Date.now(),
+                user: currentUser.displayName
+            };
+            
+            await set(ref(db, `users/${currentUser.uid}/results/${currentSeries.id}/${currentPaperIndex}`), resultData);
+            
+            // Save for Leaderboard (Simplified: Separate Node)
+            await set(ref(db, `leaderboard/${currentSeries.id}/${currentPaperIndex}/${currentUser.uid}`), {
+                name: currentUser.displayName,
+                score: parseFloat(score.toFixed(2)),
+                photo: currentUser.photoURL
+            });
+
+            // Show Result
+            showResultUI(resultData, currentSeries.id, currentPaperIndex);
+        };
+
+        window.showResult = async (sId, pId) => {
+            const snap = await get(ref(db, `users/${currentUser.uid}/results/${sId}/${pId}`));
+            if(snap.exists()) showResultUI(snap.val(), sId, pId);
+        };
+
+        async function showResultUI(data, sId, pId) {
+            document.getElementById('resultOverlay').style.display = 'block';
+            document.getElementById('res-score').innerText = data.score;
+            document.getElementById('res-correct').innerText = data.correct;
+            document.getElementById('res-wrong').innerText = data.wrong;
+            document.getElementById('res-skip').innerText = data.skipped;
+
+            // Fetch Leaderboard & Calculate Rank
+            const lSnap = await get(ref(db, `leaderboard/${sId}/${pId}`));
+            const lbData = [];
+            lSnap.forEach(c => lbData.push(c.val()));
+            
+            // Sort by Score Descending
+            lbData.sort((a, b) => b.score - a.score);
+            
+            // Find My Rank
+            const myRank = lbData.findIndex(u => u.name === currentUser.displayName) + 1;
+            document.getElementById('res-rank').innerText = `#${myRank}`;
+            
+            // Render Top 15
+            const tbody = document.getElementById('leaderboard-body');
+            tbody.innerHTML = '';
+            lbData.slice(0, 15).forEach((u, i) => {
+                const icon = i===0 ? '👑' : (i===1 ? '🥈' : (i===2 ? '🥉' : `${i+1}.`));
+                const cls = i===0 ? 'text-warning' : 'text-white';
+                tbody.innerHTML += `
+                    <tr>
+                        <td class="${cls} fw-bold" style="width:50px">${icon}</td>
+                        <td><img src="${u.photo}" class="rounded-circle me-2" width="25">${u.name}</td>
+                        <td class="text-end fw-bold">${u.score}</td>
+                    </tr>`;
+            });
+        }
+
+        // Utils
+        window.nav = (id, el) => {
             document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-            document.getElementById(pageId).classList.add('active');
+            document.getElementById(id).classList.add('active');
             document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
             el.classList.add('active');
         };
-
-        window.openPageOverlay = (type) => {
+        window.closeOverlay = (id) => document.getElementById(id).style.display = 'none';
+        window.openPage = async (t) => {
             document.getElementById('infoOverlay').style.display = 'block';
-            document.getElementById('infoTitle').innerText = type.toUpperCase();
-            document.getElementById('infoBody').innerHTML = '<div class="text-center mt-5"><i class="fas fa-spinner fa-spin"></i></div>';
-            
-            get(ref(db, `pages/${type}`)).then(snap => {
-                document.getElementById('infoBody').innerHTML = snap.val() || "No content available.";
-            });
+            document.getElementById('infoTitle').innerText = t.toUpperCase();
+            const s = await get(ref(db, `pages/${t}`));
+            document.getElementById('infoContent').innerHTML = s.val() || "Loading...";
         };
-
-        window.openExamModal = (title, dur, marks) => {
-            document.getElementById('examStartOverlay').style.display = 'block';
-            document.getElementById('examStartTitle').innerText = title;
-            document.getElementById('examStartDur').innerText = dur;
-            document.getElementById('examStartMarks').innerText = marks;
-        }
 
     </script>
 </body>
