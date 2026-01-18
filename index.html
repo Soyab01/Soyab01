@@ -15,40 +15,50 @@
     <style>
         :root { --primary: #6366f1; --glass: rgba(255, 255, 255, 0.08); --bg-gradient: linear-gradient(135deg, #0f172a 0%, #1e1b4b 50%, #312e81 100%); }
         body { background: var(--bg-gradient); color: #f8fafc; font-family: 'Poppins', sans-serif; min-height: 100vh; overflow-x: hidden; padding-bottom: 120px; user-select: none; }
+        
+        /* 3D Glass Effects */
         .glass-card { background: var(--glass); backdrop-filter: blur(25px); border: 1px solid rgba(255,255,255,0.15); border-radius: 25px; padding: 22px; margin-bottom: 18px; box-shadow: 0 15px 35px rgba(0,0,0,0.4); }
         
-        /* Auth Screen Centered */
+        /* Centered Login Box */
         #auth-screen { position: fixed; inset: 0; background: #020617; z-index: 9000; display: flex; align-items: center; justify-content: center; }
-        
-        /* 3D Profile UX */
-        .profile-3d-tile { background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 20px; padding: 15px 20px; margin-bottom: 12px; box-shadow: 8px 8px 20px rgba(0,0,0,0.3); display: flex; align-items: center; width: 100%; color: white; border: none; text-align: left; transition: 0.3s; }
-        .profile-3d-tile:active { transform: scale(0.95); }
-        .input-3d { background: rgba(0,0,0,0.2); border: 1px solid rgba(255,255,255,0.1); border-radius: 12px; color: white; text-align: center; margin-bottom: 10px; box-shadow: inset 2px 2px 5px rgba(0,0,0,0.5); }
+        .login-card { background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.1); border-radius: 30px; padding: 40px 25px; width: 90%; max-width: 380px; text-align: center; box-shadow: 0 0 50px rgba(99, 102, 241, 0.2); }
+        .login-card img { width: 100px; height: 100px; border-radius: 50%; border: 3px solid var(--primary); box-shadow: 0 0 25px var(--primary); margin-bottom: 20px; object-fit: cover; }
 
-        .nav-dock { position: fixed; bottom: 15px; left: 50%; transform: translateX(-50%); width: 95%; max-width: 500px; background: rgba(15, 23, 42, 0.95); border-radius: 30px; display: flex; justify-content: space-around; padding: 10px 5px; z-index: 8000; border: 1px solid rgba(255,255,255,0.15); }
-        .nav-link-3d { color: rgba(255,255,255,0.4); text-decoration: none; text-align: center; flex: 1; font-size: 0.7rem; cursor: pointer; }
+        /* 3D Profile UI */
+        .profile-tile-3d { background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 20px; padding: 15px 20px; margin-bottom: 15px; display: flex; align-items: center; width: 100%; color: white; border: none; transition: 0.3s; box-shadow: 8px 8px 20px rgba(0,0,0,0.3); }
+        .profile-tile-3d:active { transform: scale(0.96); box-shadow: 2px 2px 10px rgba(0,0,0,0.5); }
+        .profile-tile-3d i { font-size: 1.4rem; margin-right: 15px; color: var(--primary); }
+        .input-3d { background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.1); border-radius: 15px; color: white; padding: 12px; text-align: center; margin-bottom: 12px; box-shadow: inset 2px 2px 8px rgba(0,0,0,0.5); width: 100%; outline: none; }
+
+        /* Navigation */
+        .nav-dock { position: fixed; bottom: 15px; left: 50%; transform: translateX(-50%); width: 95%; max-width: 500px; background: rgba(15, 23, 42, 0.95); border-radius: 30px; display: flex; justify-content: space-around; padding: 10px 5px; z-index: 8000; border: 1px solid rgba(255,255,255,0.15); box-shadow: 0 15px 40px rgba(0,0,0,0.5); }
+        .nav-link-3d { color: rgba(255,255,255,0.4); text-decoration: none; text-align: center; flex: 1; font-size: 0.7rem; cursor: pointer; transition: 0.3s; }
         .nav-link-3d.active { color: var(--primary); transform: translateY(-5px); text-shadow: 0 0 10px var(--primary); }
         .nav-link-3d i { font-size: 1.2rem; display: block; margin-bottom: 2px; }
-        
-        .page { display: none; } .page.active { display: block; animation: fadeInUp 0.4s; }
+
+        .page { display: none; } .page.active { display: block; animation: fadeInUp 0.4s ease-out; }
         #exam-overlay, #testListOverlay, #result-overlay, #info-page-overlay { display: none; position: fixed; inset: 0; background: #020617; z-index: 9999; flex-direction: column; overflow-y:auto; }
         .opt-btn { text-align: left; padding: 1rem; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 1rem; width: 100%; color: white; margin-bottom: 10px; }
         .opt-btn.selected { background: var(--primary); border-color: white; }
-        #reader-overlay { display: none; position: fixed; inset: 0; background: #000; z-index: 9999; }
+        .leaderboard-item { display: flex; justify-content: space-between; padding: 10px; border-bottom: 1px solid rgba(255,255,255,0.1); align-items: center; }
+        .rank-badge { width: 25px; height: 25px; background: var(--primary); border-radius: 50%; display: inline-flex; justify-content: center; align-items: center; font-size: 0.7rem; margin-right: 10px; font-weight: bold; }
+        .stats-header { background: linear-gradient(to right, #4f46e5, #7c3aed); border-radius: 20px; padding: 15px; margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center; }
         iframe { width: 100%; height: 92vh; border: none; }
-        .leaderboard-item { display: flex; justify-content: space-between; padding: 10px; border-bottom: 1px solid rgba(255,255,255,0.1); font-size: 0.85rem; align-items: center; }
-        .rank-badge { width: 24px; height: 24px; background: var(--primary); border-radius: 50%; display: inline-flex; justify-content: center; align-items: center; font-size: 0.7rem; margin-right: 10px; font-weight: bold; }
     </style>
 </head>
 <body oncontextmenu="return false;">
 
-    <!-- AUTH SCREEN (Centered) -->
+    <!-- CENTERED LOGIN SCREEN -->
     <div id="auth-screen">
-        <div class="glass-card text-center" style="width: 90%; max-width: 380px;">
-            <img src="./manoj.jpg.jpg" style="width: 100px; height:100px; border-radius: 50%; border: 3px solid var(--primary); margin-bottom: 20px; object-fit:cover;">
+        <div class="login-card animate__animated animate__zoomIn">
+            <img src="./manoj.jpg.jpg" onerror="this.src='https://cdn-icons-png.flaticon.com/512/3135/3135715.png'">
             <h3 class="fw-800">MANOJ NEHRA</h3>
-            <button onclick="login()" class="btn btn-light w-100 rounded-pill py-3 fw-bold mb-3 shadow">Sign in with Google</button>
-            <p class="small opacity-50" onclick="showInfoPage('privacy')">By logging in, you agree to our <u class="text-primary cursor-pointer">Privacy Policy</u></p>
+            <p class="small opacity-75 mb-4">Official Preparation Platform</p>
+            <button onclick="login()" class="btn btn-light w-100 rounded-pill py-3 fw-bold shadow mb-3">
+                <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" width="20" class="me-2">
+                Sign in with Google
+            </button>
+            <p class="small opacity-50" onclick="showInfoPage('privacy')">By continuing, you accept our <u class="text-primary cursor-pointer">Privacy Policy</u></p>
         </div>
     </div>
 
@@ -56,35 +66,42 @@
     <div id="main-app" style="display:none;">
         <header class="container pt-4">
             <div class="d-flex align-items-center gap-2">
-                <img src="./manoj.jpg.jpg" style="width:40px; height:40px; border-radius: 50%; border: 1px solid var(--primary);">
+                <img src="./manoj.jpg.jpg" style="width:45px; height:45px; border-radius: 50%; border: 1px solid var(--primary);">
                 <div class="d-flex flex-column">
                     <h6 class="fw-bold mb-0">MANOJ NEHRA</h6>
-                    <div id="welcome-user" class="small text-info fw-bold" style="font-size: 0.7rem;">Welcome, User</div>
+                    <div id="welcome-user-text" class="small text-info fw-bold" style="font-size: 0.75rem;">Welcome, User</div>
                 </div>
             </div>
         </header>
 
         <div class="container mt-2">
-            <div id="homePage" class="page active"><div id="notesGrid" class="row g-3 pt-3"></div></div>
-            <div id="testSeriesPage" class="page"><div id="testSeriesGrid" class="row g-3 pt-3"></div></div>
-            <div id="purchasePage" class="page pt-3">
-                <h3 class="text-center mb-4">मेरी लाइब्रेरी</h3>
-                <div id="myNotesGrid" class="mb-4"></div><div id="myTestsGrid"></div>
+            <div id="homePage" class="page active">
+                <div class="py-3"><h3 class="fw-800">Study Notes</h3></div>
+                <div id="notesGrid" class="row g-3"></div>
             </div>
-            <!-- 3D Profile Page -->
+            <div id="testSeriesPage" class="page">
+                <div class="py-3 text-center"><h3 class="fw-800">Test Series</h3></div>
+                <div id="testSeriesGrid" class="row g-3"></div>
+            </div>
+            <div id="purchasePage" class="page pt-3">
+                <h3 class="text-center mb-4">Library</h3>
+                <div id="myNotesGrid" class="mb-4"></div>
+                <div id="myTestsGrid"></div>
+            </div>
+            <!-- 3D PROFILE PAGE -->
             <div id="profilePage" class="page">
-                <div class="glass-card text-center mt-4">
-                    <img id="u-img" src="" class="rounded-circle mb-3" style="width: 100px; height:100px; border: 4px solid var(--primary); object-fit:cover;">
+                <div class="glass-card text-center mt-4 mx-auto" style="max-width: 400px;">
+                    <img id="u-img" src="" class="rounded-circle mb-3 shadow" style="width: 100px; height:100px; border: 4px solid var(--primary); object-fit:cover;">
                     <div class="px-2">
-                        <input id="prof-name" type="text" class="form-control input-3d fw-bold" placeholder="Full Name">
-                        <input id="prof-phone" type="number" class="form-control input-3d" placeholder="Mobile Number">
-                        <input id="prof-state" type="text" class="form-control input-3d" placeholder="State Name">
-                        <button onclick="updateProfile()" class="btn btn-primary w-100 rounded-pill py-2 mt-2 shadow">Save Changes</button>
+                        <input id="prof-name" type="text" class="input-3d fw-bold" placeholder="Your Full Name">
+                        <input id="prof-phone" type="number" class="input-3d" placeholder="Mobile Number">
+                        <input id="prof-state" type="text" class="input-3d" placeholder="State (e.g. Rajasthan)">
+                        <button onclick="updateProfile()" class="btn btn-primary w-100 rounded-pill py-2 mt-2 shadow fw-bold">Update Profile</button>
                     </div>
                     <div class="text-start mt-4 border-top pt-3">
-                        <button onclick="showInfoPage('about')" class="profile-3d-tile"><i class="fa fa-info-circle me-3 text-primary"></i> About Us</button>
-                        <button onclick="showInfoPage('contact')" class="profile-3d-tile"><i class="fa fa-phone me-3 text-primary"></i> Contact Us</button>
-                        <button onclick="showInfoPage('privacy')" class="profile-3d-tile"><i class="fa fa-lock me-3 text-primary"></i> Privacy Policy</button>
+                        <button onclick="showInfoPage('about')" class="profile-tile-3d"><i class="fa fa-info-circle"></i> About Us</button>
+                        <button onclick="showInfoPage('contact')" class="profile-tile-3d"><i class="fa fa-phone"></i> Contact Us</button>
+                        <button onclick="showInfoPage('privacy')" class="profile-tile-3d"><i class="fa fa-shield-halved"></i> Privacy Policy</button>
                     </div>
                     <button class="btn btn-danger w-100 py-3 mt-4 rounded-pill fw-bold" onclick="logout()">Logout Account</button>
                 </div>
@@ -99,17 +116,20 @@
         </nav>
     </div>
 
-    <!-- Info Overlay -->
+    <!-- INFO PAGES OVERLAY -->
     <div id="info-page-overlay" class="p-4">
-        <button onclick="closeInfoPage()" class="btn btn-sm btn-outline-light mb-4"><i class="fa fa-arrow-left"></i> Back</button>
-        <div id="info-content" class="container text-white-50" style="font-size: 0.95rem; line-height: 1.8;"></div>
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h4 id="info-title" class="text-primary fw-bold mb-0">Page</h4>
+            <button onclick="closeInfoPage()" class="btn btn-outline-danger btn-sm rounded-pill px-3">Close X</button>
+        </div>
+        <div id="info-content" class="container text-white-50" style="font-size: 0.95rem; line-height: 1.8; text-align: justify;"></div>
     </div>
 
     <!-- Test List Modal -->
     <div id="testListOverlay" class="p-4">
         <button onclick="closeTestList()" class="btn btn-sm btn-outline-light mb-3"><i class="fa fa-arrow-left"></i> Back</button>
-        <div class="glass-card d-flex justify-content-between align-items-center mb-3">
-            <div><small class="opacity-75 d-block">Series Total Score</small><h4 id="global-score-text" class="fw-bold mb-0">****</h4></div>
+        <div class="stats-header">
+            <div><small class="opacity-75 d-block">Overall Series Score</small><h4 id="global-score-text" class="fw-bold mb-0">****</h4></div>
             <button onclick="toggleGlobalScore()" class="btn btn-sm btn-light rounded-pill px-3"><i id="score-toggle-icon" class="fa fa-eye-slash"></i></button>
         </div>
         <h2 id="current-series-title" class="text-center mb-4 fs-5 fw-bold"></h2>
@@ -127,7 +147,7 @@
                 <p id="q-num" class="text-primary fw-bold small mb-2"></p>
                 <h5 id="q-text" class="mb-4"></h5>
                 <div id="opt-box"></div>
-                <div class="d-flex justify-content-between mt-4"><button onclick="prevQ()" class="btn btn-outline-light px-4">Prev</button><button onclick="nextQ()" class="btn btn-primary px-4">Next</button></div>
+                <div class="d-flex justify-content-between mt-4"><button onclick="prevQ()" class="btn btn-outline-light">Prev</button><button onclick="nextQ()" class="btn btn-primary">Next</button></div>
             </div>
         </div>
     </div>
@@ -136,19 +156,19 @@
     <div id="result-overlay" class="p-4">
         <button onclick="closeReview()" class="btn btn-sm btn-outline-light mb-4"><i class="fa fa-arrow-left"></i> Home</button>
         <div class="glass-card text-center mb-4">
-            <h3 class="fw-800">Exam Result</h3>
+            <h3 class="fw-800">Test Result</h3>
             <h1 id="final-score-val" class="text-primary fw-bold">0.0</h1>
             <p id="stats-summary" class="small opacity-75"></p>
             <button onclick="showReviewItems()" class="btn btn-outline-primary btn-sm rounded-pill w-100 mt-2">Test Preview</button>
         </div>
         <div class="glass-card">
-            <h6 class="fw-bold mb-3"><i class="fa fa-trophy text-warning me-2"></i> Top 15 Rankings</h6>
+            <h6 class="fw-bold mb-3"><i class="fa fa-trophy text-warning me-2"></i> Top 15 Leaderboard</h6>
             <div id="leaderboard-list"></div>
         </div>
         <div id="detailed-review" style="display:none;" class="mt-4"></div>
     </div>
 
-    <!-- Reader -->
+    <!-- PDF Reader -->
     <div id="reader-overlay">
         <div class="p-2 bg-dark d-flex justify-content-between align-items-center">
             <button class="btn btn-primary btn-sm" id="btn-download"><i class="fa fa-download"></i> Download</button>
@@ -169,7 +189,8 @@
         const db = getDatabase(app);
         const provider = new GoogleAuthProvider();
 
-        window.login = () => signInWithPopup(auth, provider);
+        // GLOBAL BINDING FOR LOGIN/LOGOUT
+        window.login = () => signInWithPopup(auth, provider).catch(err => Swal.fire('Error', err.message, 'error'));
         window.logout = () => signOut(auth).then(() => location.reload());
 
         let userData = null;
@@ -182,7 +203,7 @@
                 userData = user;
                 document.getElementById('auth-screen').style.display = 'none';
                 document.getElementById('main-app').style.display = 'block';
-                document.getElementById('welcome-user').innerText = "Welcome, " + user.displayName;
+                document.getElementById('welcome-user-text').innerText = "Welcome, " + user.displayName;
                 
                 const pSnap = await get(ref(db, `users/${user.uid}/profile`));
                 const pData = pSnap.exists() ? pSnap.val() : {};
@@ -198,6 +219,12 @@
             }
         });
 
+        window.updateProfile = async () => {
+            const data = { name: document.getElementById('prof-name').value, phone: document.getElementById('prof-phone').value, state: document.getElementById('prof-state').value };
+            await update(ref(db, `users/${userData.uid}/profile`), data);
+            Swal.fire('Success', 'Profile Saved to Cloud', 'success');
+        };
+
         window.showPage = (id, el) => {
             document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
             document.getElementById(id).classList.add('active');
@@ -205,21 +232,16 @@
             if(el) el.classList.add('active');
         };
 
-        window.updateProfile = async () => {
-            const data = { name: document.getElementById('prof-name').value, phone: document.getElementById('prof-phone').value, state: document.getElementById('prof-state').value };
-            await update(ref(db, `users/${userData.uid}/profile`), data);
-            Swal.fire('Success', 'Profile Updated', 'success');
-        };
-
-        // --- FULL POLICY DATA ---
+        // --- 1500 WORDS POLICY DATA ---
         const pageData = {
-            privacy: `<h2>Privacy Policy</h2><p>Our app respects user privacy... (1500 words content)...</p>`,
-            about: `<h2>About Us</h2><p>Manoj Nehra Hub provides Rajasthan exam prep... (1500 words content)...</p>`,
-            contact: `<h2>Contact Us</h2><p>Email: support@example.com ... (1500 words content)...</p>`
+            privacy: `<h2>Privacy Policy</h2><p>Our app Manoj Nehra Official Hub respects user privacy and complies with Play Console standards. We collect your Name, Email, and Profile picture via Google Auth for identification. Your Mobile and State data are stored to customize your experience. We do not sell data to third parties. All payments are processed via secure Razorpay gateways... [Add remaining 1500 words of legal text here]</p>`,
+            about: `<h2>About Us</h2><p>Manoj Nehra Hub is Rajasthan's leading educational platform for competitive exam prep. We provide top-quality notes and state-wide test series... [Add remaining 1500 words of mission statement here]</p>`,
+            contact: `<h2>Contact Us</h2><p>For support, email: help@manojnehra.com. Support hours: 10AM to 6PM Rajasthan Time... [Add remaining content here]</p>`
         };
-        window.showInfoPage = (type) => { document.getElementById('info-page-overlay').style.display = 'flex'; document.getElementById('info-content').innerHTML = pageData[type]; };
+        window.showInfoPage = (type) => { document.getElementById('info-page-overlay').style.display = 'flex'; document.getElementById('info-title').innerText = type.toUpperCase(); document.getElementById('info-content').innerHTML = pageData[type]; };
         window.closeInfoPage = () => document.getElementById('info-page-overlay').style.display = 'none';
 
+        // --- DATA LOADING & LOGIC ---
         async function loadNotes() {
             const snap = await get(ref(db, `users/${auth.currentUser.uid}/purchases/notes`));
             const purchased = snap.exists() ? snap.val() : {};
@@ -257,8 +279,10 @@
             const tests = JSON.parse(sSnap.val().questions || "[]");
             const rSnap = await get(ref(db, `users/${auth.currentUser.uid}/testResults/${id}`));
             const results = rSnap.exists() ? rSnap.val() : {};
+            
             lastFetchedTotalScore = Object.values(results).reduce((a, b) => a + (typeof b === 'number' ? b : 0), 0);
-            if(!globalScoreHidden) document.getElementById('global-score-text').innerText = lastFetchedTotalScore.toFixed(2);
+            document.getElementById('global-score-text').innerText = globalScoreHidden ? "****" : lastFetchedTotalScore.toFixed(2);
+
             const box = document.getElementById('test-list-container'); box.innerHTML = "";
             tests.forEach((t, i) => {
                 const completed = results[i] !== undefined; const locked = i > 0 && results[i-1] === undefined;
@@ -297,9 +321,11 @@
             let correct = 0, wrong = 0;
             currentExamQs.forEach((q, i) => { if(userAnswers[i] === (q.ans || q.answer)) correct++; else if(userAnswers[i] !== null) wrong++; });
             let deduction = (wrong * (curPos / curRatio)); let total = (correct * curPos) - deduction;
+            
             const testKey = `${activeSeriesId}_${activeTestIdx}`;
             await set(ref(db, `users/${userData.uid}/testResults/${activeSeriesId}/${activeTestIdx}`), total);
             await set(ref(db, `leaderboards/${testKey}/${userData.uid}`), { score: total, userName: userData.displayName, photo: userData.photoURL });
+
             document.getElementById('final-score-val').innerText = total.toFixed(2);
             document.getElementById('stats-summary').innerText = `Correct: ${correct} | Wrong: ${wrong}`;
             document.getElementById('result-overlay').style.display = 'block';
@@ -318,6 +344,7 @@
             });
         }
 
+        // OTHER HELPERS
         window.closeReview = () => { document.getElementById('result-overlay').style.display = 'none'; document.querySelector('.nav-dock').style.display = 'flex'; showPage('homePage', document.querySelector('.nav-link-3d')); };
         window.closeTestList = () => document.getElementById('testListOverlay').style.display = 'none';
         window.toggleGlobalScore = () => { globalScoreHidden = !globalScoreHidden; document.getElementById('global-score-text').innerText = globalScoreHidden ? "****" : lastFetchedTotalScore.toFixed(2); document.getElementById('score-toggle-icon').className = globalScoreHidden ? "fa fa-eye-slash" : "fa fa-eye"; };
