@@ -81,7 +81,7 @@
                 <div id="myTestsGrid"></div>
             </div>
             
-            <!-- Updated Profile Page (Point 1 & 4) -->
+            <!-- Profile Page -->
             <div id="profilePage" class="page">
                 <div class="glass-card text-center mt-4">
                     <img id="u-img" src="" class="rounded-circle mb-3 shadow" style="width: 80px; height:80px; border: 3px solid var(--primary); object-fit:cover;">
@@ -160,7 +160,7 @@
         </div>
     </div>
 
-    <!-- Result & Leaderboard Overlay (Point 5) -->
+    <!-- Result & Leaderboard Overlay -->
     <div id="result-overlay" class="p-4">
         <button onclick="closeReview()" class="btn btn-sm btn-outline-light mb-4"><i class="fa fa-arrow-left"></i> Home</button>
         
@@ -177,7 +177,6 @@
         <h6 class="fw-bold mb-3 text-warning"><i class="fa fa-trophy me-2"></i>Top 15 Students</h6>
         <div class="glass-card p-0 overflow-hidden">
             <div id="leaderboard-list">
-                <!-- Ranks will load here -->
                 <p class="text-center p-3 small opacity-50">Loading ranks...</p>
             </div>
         </div>
@@ -252,7 +251,7 @@
             }
         });
 
-        // --- NEW: Profile Logic (Point 4) ---
+        // --- Profile Logic ---
         async function loadUserProfile() {
             const snap = await get(ref(db, `users/${auth.currentUser.uid}/profile`));
             if(snap.exists()) {
@@ -286,7 +285,7 @@
             Swal.fire('Success', 'Profile Updated!', 'success');
         };
 
-        // --- NEW: Page Modal Logic (About/Privacy) ---
+        // --- Page Modal Logic (About/Privacy) ---
         window.openPageModal = async (pageType) => {
             document.getElementById('page-overlay').style.display = 'flex';
             document.getElementById('page-title').innerText = pageType === 'privacy' ? "Privacy Policy" : "About Us";
@@ -345,8 +344,9 @@
             else buyTest(id, price);
         };
 
-        window.buyNote = (id, p) => { new Razorpay({key:"rzp_test_RwizK12wU5cyN6", amount:p*100, name:"Manoj Nehra", handler: async()=> { await set(ref(db,`users/${auth.currentUser.uid}/purchases/notes/${id}`),{paid:true}); loadNotes(); }}).open(); };
-        window.buyTest = (id, p) => { new Razorpay({key:"rzp_test_RwizK12wU5cyN6", amount:p*100, name:"Manoj Nehra", handler: async()=> { await set(ref(db,`users/${auth.currentUser.uid}/purchases/tests/${id}`),{paid:true}); loadTestSeries(); }}).open(); };
+        // --- RAZORPAY LIVE KEY UPDATED HERE ---
+        window.buyNote = (id, p) => { new Razorpay({key:"rzp_live_Ry7zglI0OnE1Jo", amount:p*100, name:"Manoj Nehra", handler: async()=> { await set(ref(db,`users/${auth.currentUser.uid}/purchases/notes/${id}`),{paid:true}); loadNotes(); }}).open(); };
+        window.buyTest = (id, p) => { new Razorpay({key:"rzp_live_Ry7zglI0OnE1Jo", amount:p*100, name:"Manoj Nehra", handler: async()=> { await set(ref(db,`users/${auth.currentUser.uid}/purchases/tests/${id}`),{paid:true}); loadTestSeries(); }}).open(); };
 
         window.openTestList = async (id, title) => {
             activeSeriesId = id;
@@ -361,7 +361,6 @@
             lastFetchedTotalScore = Object.values(results).reduce((a, b) => a + b, 0);
             if(!globalScoreHidden) document.getElementById('global-score-text').innerText = lastFetchedTotalScore.toFixed(2);
             
-            // Save total score for Leaderboard
             await set(ref(db, `users/${auth.currentUser.uid}/totalScore`), lastFetchedTotalScore);
 
             const box = document.getElementById('test-list-container'); box.innerHTML = "";
@@ -407,27 +406,24 @@
             let deduction = (wrong * (curPos / curRatio));
             let total = (correct * curPos) - deduction;
             
-            // Save Test Result
             await set(ref(db, `users/${auth.currentUser.uid}/testResults/${activeSeriesId}/${activeTestIdx}`), total);
             
-            // Show Result Screen (Point 5)
             document.getElementById('res-score').innerText = total.toFixed(2);
             document.getElementById('result-overlay').style.display = 'block';
             document.getElementById('review-container').style.display = 'none';
             
-            loadLeaderboard(); // Load Top 15
+            loadLeaderboard(); 
         };
 
-        // --- NEW: Leaderboard Logic ---
+        // --- Leaderboard Logic ---
         function loadLeaderboard() {
             const list = document.getElementById('leaderboard-list');
-            // Fetch top 15 users ordered by totalScore
             const q = query(ref(db, 'users'), orderByChild('totalScore'), limitToLast(15));
             onValue(q, (snap) => {
                 list.innerHTML = "";
                 let users = [];
                 snap.forEach(child => users.push({name: child.val().profile?.name || "User", score: child.val().totalScore || 0}));
-                users.reverse(); // Highest first
+                users.reverse(); 
                 
                 users.forEach((u, i) => {
                     list.innerHTML += `<div class="rank-row"><div class="d-flex gap-3"><span class="rank-num">#${i+1}</span> <span>${u.name}</span></div><span class="text-warning fw-bold">${u.score.toFixed(1)}</span></div>`;
