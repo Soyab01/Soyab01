@@ -3,352 +3,222 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Manoj Nehra | Learning Hub</title>
+    <title>Manoj Nehra | Official Hub</title>
     
+    <!-- CSS Assets -->
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;800&display=swap" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
     
     <style>
-        /* CSS Wahi purana rahega - No Change needed in Style */
         :root { 
-            --primary: #6366f1; --accent: #a855f7; --dark: #0f172a;
-            --glass: rgba(255, 255, 255, 0.05); 
-            --bg-gradient: linear-gradient(135deg, #020617 0%, #1e1b4b 100%);
+            --primary: #6366f1; 
+            --bg-gradient: linear-gradient(135deg, #0f172a 0%, #1e1b4b 50%, #312e81 100%);
         }
-        body { background: var(--bg-gradient); color: #f8fafc; font-family: 'Poppins', sans-serif; min-height: 100vh; padding-bottom: 90px; user-select: none; }
-        .glass-card { background: var(--glass); backdrop-filter: blur(16px); border: 1px solid rgba(255,255,255,0.1); border-radius: 20px; padding: 15px; position: relative; margin-bottom: 15px; }
-        .thumb-img { width: 100%; height: 140px; object-fit: cover; border-radius: 15px; margin-bottom: 10px; }
-        .nav-dock { position: fixed; bottom: 15px; left: 50%; transform: translateX(-50%); width: 95%; max-width: 450px; background: rgba(15, 23, 42, 0.98); border-radius: 25px; display: flex; justify-content: space-around; padding: 10px; z-index: 1000; border: 1px solid rgba(255,255,255,0.2); }
-        .nav-item { text-align: center; color: rgba(255,255,255,0.5); flex: 1; font-size: 0.7rem; }
-        .nav-item.active { color: var(--primary); transform: translateY(-3px); }
-        .nav-item i { font-size: 1.3rem; display: block; }
-        .overlay-fs { position: fixed; inset: 0; background: #0f172a; z-index: 5000; overflow-y: auto; display: none; padding-bottom: 50px; }
-        .page { display: none; animation: fadeIn 0.4s; }
-        .page.active { display: block; }
-        /* Exam Grid */
-        .q-palette { display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; }
-        .q-btn { height: 35px; border-radius: 5px; border: 1px solid #555; display: flex; align-items: center; justify-content: center; font-size: 0.8rem; cursor: pointer; }
-        .q-btn.answered { background: #22c55e; border-color: transparent; }
+        body { background: var(--bg-gradient); color: #f8fafc; font-family: 'Poppins', sans-serif; min-height: 100vh; }
+        .glass-card { background: rgba(255, 255, 255, 0.08); backdrop-filter: blur(25px); border: 1px solid rgba(255,255,255,0.15); border-radius: 30px; padding: 25px; }
+        #auth-screen { position: fixed; inset: 0; background: #020617; z-index: 9000; display: flex; align-items: center; justify-content: center; }
+        .login-box { text-align: center; width: 90%; max-width: 400px; }
+        .login-logo { width: 110px; height: 110px; border-radius: 50%; border: 4px solid var(--primary); margin-bottom: 25px; }
+        
+        /* Main App & Profile Styles */
+        #main-app { display: none; }
+        .page { display: none; } .page.active { display: block; }
+        .nav-dock { position: fixed; bottom: 15px; left: 50%; transform: translateX(-50%); width: 95%; max-width: 500px; background: rgba(15, 23, 42, 0.98); border-radius: 35px; display: flex; justify-content: space-around; padding: 12px 5px; z-index: 8000; border: 1px solid rgba(255,255,255,0.1); }
+        .nav-link-3d { color: rgba(255,255,255,0.4); flex: 1; text-align: center; font-size: 0.75rem; cursor: pointer; }
+        .nav-link-3d.active { color: var(--primary); transform: translateY(-5px); }
+        .nav-link-3d i { font-size: 1.3rem; display: block; margin-bottom: 3px; }
+        
+        .profile-inner { background: rgba(255, 255, 255, 0.03); border-radius: 40px; padding: 30px 20px; margin-top: 20px; text-align: center; }
+        .input-group-3d { background: rgba(0,0,0,0.3); border-radius: 15px; padding: 10px; margin-bottom: 12px; border: 1px solid rgba(255,255,255,0.05); }
+        .input-group-3d input { background: transparent; border: none; color: white; width: 100%; text-align: center; outline: none; }
     </style>
 </head>
-<body oncontextmenu="return false;">
+<body>
 
-    <!-- LOGIN -->
-    <div id="auth-screen" style="position:fixed; inset:0; z-index:9000; background:#020617; display:flex; align-items:center; justify-content:center;">
-        <div class="glass-card text-center" style="width:300px;">
-            <img src="./manoj.jpg.jpg" class="rounded-circle border border-3 border-primary shadow mb-3" width="90" onerror="this.src='https://via.placeholder.com/90'">
-            <h4 class="fw-bold">Login</h4>
-            <!-- Loading message hidden by default -->
-            <div id="login-loading" class="small text-warning mb-2" style="display:none;">Redirecting to Google...</div>
-            <button onclick="login()" class="btn btn-light w-100 rounded-pill mt-3 fw-bold"><i class="fab fa-google"></i> Sign In</button>
+    <!-- LOGIN SCREEN -->
+    <div id="auth-screen">
+        <div class="login-box glass-card">
+            <img src="./manoj.jpg.jpg" class="login-logo" onerror="this.src='https://via.placeholder.com/110'">
+            <h2 class="fw-bold">MANOJ NEHRA</h2>
+            <p class="small opacity-75 mb-4">Official Preparation Platform</p>
+            
+            <!-- Button ID added for direct JS attachment -->
+            <button id="google-login-btn" class="btn btn-light w-100 rounded-pill py-3 fw-bold shadow-lg mb-3">
+                <i class="fab fa-google me-2 text-danger"></i> Sign in with Google
+            </button>
+            
+            <p class="small opacity-50">By continuing, you accept our Privacy Policy</p>
         </div>
     </div>
 
     <!-- MAIN APP -->
-    <div id="main-app" style="display:none;">
-        <header class="container pt-3 pb-2 sticky-top" style="background: rgba(2,6,23,0.95); z-index: 900;">
-            <div class="d-flex align-items-center justify-content-between">
-                <div class="d-flex align-items-center">
-                    <img id="head-img" src="" class="rounded-circle border border-secondary" width="40">
-                    <div class="ms-3 lh-1">
-                        <h6 class="mb-0 fw-bold" id="user-name">Student</h6>
-                        <small class="text-success" style="font-size:0.7rem">● Online</small>
-                    </div>
+    <div id="main-app">
+        <header class="container pt-4">
+            <div class="d-flex align-items-center gap-3">
+                <img id="header-img" src="" style="width:50px; height:50px; border-radius: 50%; border: 2px solid var(--primary);">
+                <div>
+                    <h6 class="fw-bold mb-0">MANOJ NEHRA</h6>
+                    <div id="welcome-user" class="small text-info fw-bold">Welcome</div>
                 </div>
             </div>
         </header>
 
-        <div class="container mt-2">
-            <!-- PAGES (Content Same as before) -->
+        <div class="container mt-3 pb-5">
             <div id="homePage" class="page active">
-                <h5 class="fw-bold mb-3 ps-2 border-start border-4 border-primary">Latest Notes</h5>
-                <div id="notes-container" class="row g-3"></div>
+                <div class="alert alert-info small">Select an option from the bottom menu.</div>
+                <h3 class="fw-bold text-center mt-5">Welcome to Dashboard</h3>
             </div>
-            <div id="testsPage" class="page">
-                <h5 class="fw-bold mb-3 ps-2 border-start border-4 border-info">Test Series</h5>
-                <div id="series-container" class="row g-3"></div>
-            </div>
-            <div id="libraryPage" class="page">
-                <h5 class="fw-bold mb-3 ps-2 border-start border-4 border-success">My Library</h5>
-                <div id="library-container" class="row g-3"></div>
-            </div>
+            
             <div id="profilePage" class="page">
-                <div class="glass-card text-center mt-4">
-                    <img id="prof-img" src="" class="rounded-circle mb-3 border border-4 border-primary" width="100">
-                    <input id="p-name" class="form-control bg-dark text-white border-secondary mb-2 text-center" placeholder="Name" disabled>
-                    <input id="p-phone" class="form-control bg-dark text-white border-secondary mb-2 text-center" placeholder="Phone" disabled>
-                    <button id="btn-edit-prof" onclick="toggleEditProfile()" class="btn btn-primary w-100 mb-3">Edit Profile</button>
-                    <button onclick="logout()" class="btn btn-outline-danger w-100 rounded-pill">Logout</button>
+                <div class="profile-inner">
+                    <img id="u-img" src="" class="rounded-circle mb-3" style="width: 100px; height:100px; border: 3px solid var(--primary);">
+                    <div class="input-group-3d"><input id="prof-name" type="text" placeholder="Name"></div>
+                    <div class="input-group-3d"><input id="prof-phone" type="number" placeholder="Phone"></div>
+                    <div class="input-group-3d"><input id="prof-state" type="text" placeholder="State"></div>
+                    <button id="save-profile-btn" class="btn btn-primary w-100 rounded-pill mb-3">Save Profile</button>
+                    <button id="logout-btn" class="btn btn-danger w-100 rounded-pill">Logout</button>
                 </div>
             </div>
         </div>
 
         <nav class="nav-dock">
-            <div class="nav-item active" onclick="nav('homePage', this)"><i class="fas fa-book"></i>Notes</div>
-            <div class="nav-item" onclick="nav('testsPage', this)"><i class="fas fa-laptop-code"></i>Tests</div>
-            <div class="nav-item" onclick="nav('libraryPage', this)"><i class="fas fa-bookmark"></i>Library</div>
-            <div class="nav-item" onclick="nav('profilePage', this)"><i class="fas fa-user"></i>Profile</div>
+            <div class="nav-link-3d active" onclick="switchPage('homePage', this)"><i class="fas fa-home"></i>Home</div>
+            <div class="nav-link-3d" onclick="switchPage('profilePage', this)"><i class="fas fa-user"></i>Profile</div>
         </nav>
     </div>
 
-    <!-- ALL OVERLAYS (Same as previous code) -->
-    <div id="subTestsOverlay" class="overlay-fs p-3">
-        <div class="d-flex justify-content-between align-items-center mb-4 sticky-top bg-dark pt-2 pb-2">
-            <h5 class="fw-bold m-0" id="seriesTitleDisplay">Series</h5>
-            <button onclick="closeOverlay('subTestsOverlay')" class="btn btn-sm btn-outline-light rounded-pill">Close</button>
-        </div>
-        <div id="paper-list-container"></div>
-    </div>
-    
-    <div id="examOverlay" class="overlay-fs bg-light text-dark">
-        <div class="d-flex justify-content-between align-items-center bg-primary text-white p-2 sticky-top">
-            <span class="fw-bold" id="exam-timer">00:00</span>
-            <button onclick="submitTest()" class="btn btn-sm btn-danger fw-bold">SUBMIT</button>
-        </div>
-        <div class="container mt-3 pb-5">
-            <div class="card border-0 shadow-sm mb-3">
-                <div class="card-body">
-                    <span class="badge bg-secondary mb-2">Q. <span id="q-curr">1</span></span>
-                    <p class="fw-bold" id="q-text">Loading...</p>
-                </div>
-            </div>
-            <div id="options-container" class="d-grid gap-2"></div>
-            <div class="fixed-bottom bg-white p-2 d-flex justify-content-between shadow border-top">
-                <button onclick="prevQ()" class="btn btn-outline-secondary">Prev</button>
-                <button onclick="saveAndNext()" class="btn btn-success px-4">Save & Next</button>
-            </div>
-        </div>
-    </div>
-
-    <div id="resultOverlay" class="overlay-fs p-3 text-center">
-        <h3 class="fw-bold text-warning mt-4">RESULT CARD</h3>
-        <div class="glass-card mt-3">
-            <div class="row">
-                <div class="col-4 border-end border-secondary"><h2 class="fw-bold text-white" id="res-score">0</h2><small>Score</small></div>
-                <div class="col-4 border-end border-secondary"><h2 class="fw-bold text-info" id="res-rank">#0</h2><small>Rank</small></div>
-                <div class="col-4">
-                    <div class="text-success"><i class="fas fa-check"></i> <span id="res-correct">0</span></div>
-                    <div class="text-danger"><i class="fas fa-times"></i> <span id="res-wrong">0</span></div>
-                </div>
-            </div>
-        </div>
-        <div class="d-flex gap-2">
-            <button onclick="retest()" class="btn btn-primary w-50 fw-bold"><i class="fas fa-redo"></i> Retest</button>
-            <button onclick="closeOverlay('resultOverlay')" class="btn btn-secondary w-50 fw-bold">Close</button>
-        </div>
-        <h5 class="mt-4 text-start fw-bold text-primary">🏆 Top 15 Toppers</h5>
-        <div class="glass-card p-0 overflow-hidden"><table class="rank-table"><tbody id="leaderboard-body"></tbody></table></div>
-    </div>
-
+    <!-- FIREBASE SCRIPT -->
     <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-        // IMPORTANT: Import signInWithRedirect and getRedirectResult for Mobile WebViews
-        import { getAuth, GoogleAuthProvider, signInWithPopup, signInWithRedirect, getRedirectResult, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-        import { getDatabase, ref, update, get, onValue, set } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getAuth, GoogleAuthProvider, signInWithPopup, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+        import { getDatabase, ref, get, update } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
 
-        // CONFIG
+        // 1. CONFIGURATION
         const firebaseConfig = { 
             apiKey: "AIzaSyAhg7hKJ123JRAfio7fymK543XpuNonMHo", 
+            authDomain: "showpdf-ffa34.firebaseapp.com", 
             databaseURL: "https://showpdf-ffa34-default-rtdb.firebaseio.com", 
-            projectId: "showpdf-ffa34",
-            authDomain: "showpdf-ffa34.firebaseapp.com" // Ensure this domain is Authorized in Firebase Console
+            projectId: "showpdf-ffa34" 
         };
-        
-        let app, auth, db, provider;
 
+        // 2. INITIALIZATION
+        let app, auth, db, provider;
+        
         try {
             app = initializeApp(firebaseConfig);
             auth = getAuth(app);
             db = getDatabase(app);
             provider = new GoogleAuthProvider();
-        } catch(e) { console.error(e); }
+            console.log("Firebase initialized successfully");
+        } catch (error) {
+            console.error("Firebase Init Error:", error);
+            Swal.fire("System Error", "Firebase initialization failed. Check console.", "error");
+        }
 
-        let currentUser = null;
-        let purchases = {};
-        let currentSeries = null; let currentPaper = null;
-        let userAnswers = {}; let timerInterval; let currentPaperIdx = 0;
-
-        // --- AUTHENTICATION LOGIC (UPDATED FOR WEBVIEW) ---
-        
-        // 1. Check for Redirect Result (When app comes back from Google)
-        getRedirectResult(auth)
-            .then((result) => {
-                if (result) {
-                    // User signed in successfully via Redirect
-                    // The onAuthStateChanged will handle the UI update
-                    console.log("Redirect Login Success");
-                }
-            }).catch((error) => {
-                console.error("Redirect Error:", error);
-                // Swal.fire('Login Error', error.message, 'error');
-            });
-
-        // 2. Login Function
-        window.login = () => {
-            document.getElementById('login-loading').style.display = 'block';
+        // 3. LOGIN FUNCTION
+        const handleLogin = async () => {
+            console.log("Login button clicked..."); // Debug log
             
-            // Try Popup first (works on Desktop), if fails (WebView), use Redirect
-            signInWithPopup(auth, provider)
-                .catch((error) => {
-                    console.log("Popup failed, trying redirect...", error);
-                    // Fallback to Redirect for Mobile WebViews
-                    signInWithRedirect(auth, provider);
+            if (!auth) {
+                Swal.fire("Error", "Firebase not ready. Please refresh.", "error");
+                return;
+            }
+
+            try {
+                // Direct Popup
+                const result = await signInWithPopup(auth, provider);
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Login Success',
+                    timer: 1500,
+                    showConfirmButton: false
                 });
+            } catch (error) {
+                console.error("Login Error Full:", error);
+                
+                if (error.code === 'auth/unauthorized-domain') {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Domain Error',
+                        text: `Add "${window.location.hostname}" to Firebase Console > Auth > Settings > Authorized Domains`
+                    });
+                } else if (error.code === 'auth/popup-closed-by-user') {
+                    // Do nothing or show small toast
+                } else {
+                    Swal.fire("Login Failed", error.message, "error");
+                }
+            }
         };
 
-        window.logout = () => signOut(auth).then(() => location.reload());
+        // 4. ATTACH EVENT LISTENERS (Robust Method)
+        document.addEventListener('DOMContentLoaded', () => {
+            const loginBtn = document.getElementById('google-login-btn');
+            if(loginBtn) loginBtn.addEventListener('click', handleLogin);
 
-        onAuthStateChanged(auth, (user) => {
-            if(user) {
-                currentUser = user;
+            const logoutBtn = document.getElementById('logout-btn');
+            if(logoutBtn) logoutBtn.addEventListener('click', () => signOut(auth).then(()=>location.reload()));
+
+            const saveBtn = document.getElementById('save-profile-btn');
+            if(saveBtn) saveBtn.addEventListener('click', updateProfileData);
+        });
+
+        // 5. AUTH STATE OBSERVER
+        onAuthStateChanged(auth, async (user) => {
+            if (user) {
+                console.log("User found:", user.email);
                 document.getElementById('auth-screen').style.display = 'none';
                 document.getElementById('main-app').style.display = 'block';
-                document.getElementById('user-name').innerText = user.displayName;
-                document.getElementById('head-img').src = user.photoURL;
-                document.getElementById('prof-img').src = user.photoURL;
                 
-                // Load Profile
-                get(ref(db, `users/${user.uid}/profile`)).then(snap => {
-                    if(snap.exists()) {
-                        document.getElementById('p-name').value = snap.val().name || user.displayName;
-                        document.getElementById('p-phone').value = snap.val().phone || "";
-                    } else {
-                        document.getElementById('p-name').value = user.displayName;
-                    }
-                });
+                // Set UI
+                const dName = user.displayName || "User";
+                const dPhoto = user.photoURL || "https://via.placeholder.com/100";
+                
+                document.getElementById('welcome-user').innerText = "Welcome, " + dName;
+                document.getElementById('header-img').src = dPhoto;
+                document.getElementById('u-img').src = dPhoto;
+                document.getElementById('prof-name').value = dName;
 
-                fetchPurchases();
+                // Fetch Profile from DB
+                try {
+                    const snap = await get(ref(db, `users/${user.uid}/profile`));
+                    if(snap.exists()) {
+                        const data = snap.val();
+                        if(data.phone) document.getElementById('prof-phone').value = data.phone;
+                        if(data.state) document.getElementById('prof-state').value = data.state;
+                    }
+                } catch(e) { console.error("Profile fetch error", e); }
+
             } else {
+                console.log("No user signed in");
                 document.getElementById('auth-screen').style.display = 'flex';
-                document.getElementById('login-loading').style.display = 'none';
+                document.getElementById('main-app').style.display = 'none';
             }
         });
 
-        // --- DATA & APP LOGIC (Same as before) ---
-        function fetchPurchases() {
-            onValue(ref(db, `users/${currentUser.uid}/purchases`), snap => {
-                purchases = snap.val() || {};
-                loadContent(); loadLibrary();
-            });
-        }
-
-        function loadContent() {
-            onValue(ref(db, 'notes'), snap => {
-                const box = document.getElementById('notes-container'); box.innerHTML = '';
-                snap.forEach(c => {
-                    const n = c.val(); const k = c.key;
-                    const isOwned = purchases[k];
-                    const btn = isOwned ? `<button onclick="downloadPdf('${n.link}')" class="btn btn-sm btn-success w-100 fw-bold">Download PDF</button>` : `<button onclick="buyItem('${k}','note',${n.price})" class="btn btn-sm btn-primary w-100 fw-bold">Buy ₹${n.price}</button>`;
-                    box.innerHTML += `<div class="col-6 col-md-4"><div class="glass-card p-2 h-100"><img src="${n.thumb}" class="thumb-img"><h6 class="small fw-bold text-truncate">${n.title}</h6><div class="mt-2">${btn}</div></div></div>`;
-                });
-            });
-            onValue(ref(db, 'testSeries'), snap => {
-                const box = document.getElementById('series-container'); box.innerHTML = '';
-                snap.forEach(c => {
-                    const s = c.val(); const k = c.key;
-                    const isOwned = purchases[k];
-                    const btn = isOwned ? `<button onclick="openSeries('${k}')" class="btn btn-sm btn-info w-100 fw-bold text-white">Open Series</button>` : `<button onclick="buyItem('${k}','series',${s.price})" class="btn btn-sm btn-primary w-100 fw-bold">Unlock ₹${s.price}</button>`;
-                    box.innerHTML += `<div class="col-12"><div class="glass-card d-flex align-items-center p-2"><img src="${s.thumb}" style="width:70px;height:70px;border-radius:10px;object-fit:cover" class="me-3"><div class="flex-grow-1"><h6 class="fw-bold mb-1">${s.title}</h6><small class="text-white-50">${s.papers?s.papers.length:0} Tests</small></div><div style="width:100px">${btn}</div></div></div>`;
-                });
-            });
-        }
-
-        function loadLibrary() {
-            const box = document.getElementById('library-container'); box.innerHTML = '';
-            Object.keys(purchases).forEach(async k => {
-                const type = purchases[k]; const path = type === 'note' ? 'notes' : 'testSeries';
-                const s = await get(ref(db, `${path}/${k}`));
-                if(s.exists()) {
-                    const v = s.val();
-                    const action = type === 'note' ? `downloadPdf('${v.link}')` : `openSeries('${k}')`;
-                    const btn = type === 'note' ? 'Download' : 'Open Tests';
-                    box.innerHTML += `<div class="col-12"><div class="glass-card d-flex align-items-center p-2"><div class="me-3 fs-1 text-white-50"><i class="fas fa-${type==='note'?'file-pdf':'layer-group'}"></i></div><div class="flex-grow-1"><h6 class="fw-bold mb-0">${v.title}</h6></div><button onclick="${action}" class="btn btn-sm btn-success fw-bold">${btn}</button></div></div>`;
-                }
-            });
-        }
-
-        window.buyItem = (id, type, price) => {
-            var options = {
-                "key": "rzp_test_1DP5mmOlF5G5ag", "amount": price*100, "currency": "INR", "name": "Manoj Hub",
-                "handler": function (r){ set(ref(db, `users/${currentUser.uid}/purchases/${id}`), type); Swal.fire('Success', 'Added to Library!', 'success'); },
-                "prefill": { "name": currentUser.displayName, "email": currentUser.email }
+        // 6. HELPER FUNCTIONS
+        async function updateProfileData() {
+            const user = auth.currentUser;
+            if(!user) return;
+            
+            const data = {
+                name: document.getElementById('prof-name').value,
+                phone: document.getElementById('prof-phone').value,
+                state: document.getElementById('prof-state').value
             };
-            var rzp = new Razorpay(options); rzp.open();
-        };
 
-        window.downloadPdf = (url) => { const a = document.createElement('a'); a.href=url; a.target='_blank'; a.download='file.pdf'; document.body.appendChild(a); a.click(); document.body.removeChild(a); };
-
-        window.openSeries = async (key) => {
-            const s = await get(ref(db, `testSeries/${key}`)); currentSeries = {...s.val(), id: key};
-            document.getElementById('subTestsOverlay').style.display = 'block';
-            document.getElementById('seriesTitleDisplay').innerText = currentSeries.title;
-            const list = document.getElementById('paper-list-container'); list.innerHTML = 'Loading...';
-            const res = await get(ref(db, `users/${currentUser.uid}/results/${key}`)); const results = res.val() || {};
-            list.innerHTML = '';
-            if(currentSeries.papers) {
-                currentSeries.papers.forEach((p, i) => {
-                    const locked = i > 0 && !results[i-1]; const done = results[i];
-                    let btn = locked ? `<button class="btn btn-secondary btn-sm w-100" disabled><i class="fas fa-lock"></i> Locked</button>` : (done ? `<button onclick="showResult('${key}',${i})" class="btn btn-success btn-sm w-100">Result</button>` : `<button onclick="startTest(${i})" class="btn btn-primary btn-sm w-100">Start</button>`);
-                    list.innerHTML += `<div class="glass-card mb-2 p-3 d-flex justify-content-between align-items-center"><div><h6 class="fw-bold mb-0">${p.name}</h6><small class="text-white-50">${p.duration} Mins</small></div><div style="width:80px">${btn}</div></div>`;
-                });
-            }
-        };
-
-        window.startTest = (idx) => {
-            currentPaperIdx = idx; currentPaper = currentSeries.papers[idx]; currentQIdx = 0; userAnswers = {};
-            document.getElementById('examOverlay').style.display = 'block'; loadQuestion(0);
-            let t = currentPaper.duration * 60; clearInterval(timerInterval);
-            timerInterval = setInterval(() => { t--; let m=Math.floor(t/60); let s=t%60; document.getElementById('exam-timer').innerText = `${m}:${s<10?'0'+s:s}`; if(t<=0) submitTest(); }, 1000);
-        };
-        
-        window.retest = () => { document.getElementById('resultOverlay').style.display = 'none'; startTest(currentPaperIdx); };
-
-        let currentQIdx = 0;
-        function loadQuestion(i) {
-            currentQIdx = i; const q = currentPaper.questions[i];
-            document.getElementById('q-curr').innerText = i+1; document.getElementById('q-text').innerText = q.q;
-            const b = document.getElementById('options-container'); b.innerHTML = '';
-            ['a','b','c','d'].forEach(o => {
-                const s = userAnswers[i] === o ? 'bg-primary text-white' : 'btn-outline-dark';
-                b.innerHTML += `<button onclick="selOpt(${i},'${o}')" class="btn ${s} text-start p-3 fw-bold border">${o.toUpperCase()}) ${q[o]}</button>`;
-            });
-        }
-        window.selOpt = (i, o) => { userAnswers[i] = o; loadQuestion(i); };
-        window.saveAndNext = () => { if(currentQIdx < currentPaper.questions.length-1) loadQuestion(currentQIdx+1); };
-        window.prevQ = () => { if(currentQIdx > 0) loadQuestion(currentQIdx-1); };
-
-        window.submitTest = async () => {
-            clearInterval(timerInterval); document.getElementById('examOverlay').style.display = 'none';
-            let sc=0, c=0, w=0;
-            currentPaper.questions.forEach((q, i) => { if(userAnswers[i]){ if(userAnswers[i]===q.ans){sc+=parseFloat(currentSeries.marksPerQ);c++;}else{sc-=parseFloat(currentSeries.negMark);w++;} } });
-            await set(ref(db, `users/${currentUser.uid}/results/${currentSeries.id}/${currentPaperIdx}`), { score: sc.toFixed(2), correct: c, wrong: w });
-            await set(ref(db, `leaderboard/${currentSeries.id}/${currentPaperIdx}/${currentUser.uid}`), { name: currentUser.displayName, score: parseFloat(sc.toFixed(2)), photo: currentUser.photoURL });
-            showResultUI({score: sc.toFixed(2), correct: c, wrong: w}, currentSeries.id, currentPaperIdx);
-            openSeries(currentSeries.id);
-        };
-
-        window.showResult = async (sid, pid) => { currentPaperIdx = pid; const s = await get(ref(db, `users/${currentUser.uid}/results/${sid}/${pid}`)); if(s.exists()) showResultUI(s.val(), sid, pid); };
-
-        async function showResultUI(d, sid, pid) {
-            document.getElementById('resultOverlay').style.display = 'block';
-            document.getElementById('res-score').innerText = d.score; document.getElementById('res-correct').innerText = d.correct; document.getElementById('res-wrong').innerText = d.wrong;
-            const l = await get(ref(db, `leaderboard/${sid}/${pid}`)); const ld = []; l.forEach(c => ld.push(c.val())); ld.sort((a,b)=>b.score-a.score);
-            const r = ld.findIndex(u => u.name === currentUser.displayName) + 1; document.getElementById('res-rank').innerText = `#${r}`;
-            const tb = document.getElementById('leaderboard-body'); tb.innerHTML = '';
-            ld.slice(0, 15).forEach((u, i) => { tb.innerHTML += `<tr><td class="${i<3?'fw-bold text-warning':''}">${i+1}.</td><td><img src="${u.photo}" class="rounded-circle me-2" width="20">${u.name}</td><td class="fw-bold">${u.score}</td></tr>`; });
+            await update(ref(db, `users/${user.uid}/profile`), data);
+            Swal.fire("Saved", "Profile updated successfully", "success");
         }
 
-        window.toggleEditProfile = () => {
-            const i1=document.getElementById('p-name'), i2=document.getElementById('p-phone'), b=document.getElementById('btn-edit-prof');
-            if(!i1.disabled) { update(ref(db, `users/${currentUser.uid}/profile`), { name: i1.value, phone: i2.value }); i1.disabled=true; i2.disabled=true; b.innerText="Edit Profile"; }
-            else { i1.disabled=false; i2.disabled=false; b.innerText="Save Profile"; }
+        // Expose Page Switcher to Window (Global)
+        window.switchPage = (pageId, btn) => {
+            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+            document.getElementById(pageId).classList.add('active');
+            document.querySelectorAll('.nav-link-3d').forEach(b => b.classList.remove('active'));
+            if(btn) btn.classList.add('active');
         };
-
-        window.nav = (id, el) => { document.querySelectorAll('.page').forEach(p=>p.classList.remove('active')); document.getElementById(id).classList.add('active'); document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active')); if(el) el.classList.add('active'); };
-        window.closeOverlay = (id) => document.getElementById(id).style.display = 'none';
     </script>
 </body>
 </html>
